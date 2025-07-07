@@ -1,4 +1,4 @@
-package com.writeit.write_it.model;
+package com.writeit.write_it.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,7 +23,13 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
-    // constructor
+    @Column(name = "status", nullable = false)
+    private String status = "active"; // create enum later
+
+    // constructors
+    public User() {
+    }
+
     public User(String username, String password) {
         this.username = username;
         this.password = password;
@@ -54,6 +60,14 @@ public class User {
         this.password = password;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     // toString method
     @Override
     public String toString() {
@@ -61,6 +75,7 @@ public class User {
                 "id=" + id +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
+                ", status='" + status + '\'' +
                 '}';
     }
 
