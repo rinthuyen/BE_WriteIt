@@ -21,18 +21,13 @@ public class UserController {
         this.userService = userService;
     }
 
-    // http://localhost:1000/WriteIt/api/users/hello
-    @GetMapping("/hello")
-    public String saysHello() {
-        return "Hello from UserController!";
-    }
-
     @PostMapping("/register")
     public UserRegisterResponseDTO registerUser(@RequestBody UserRegisterDTO userRegisterDTO) {
         UserRegisterResponseDTO userRegisterResponseDTO = userService.register(
                 userRegisterDTO.getUsername(),
-                userRegisterDTO.getPassword());
-        return userRegisterResponseDTO; // consider returning a response DTO with status
+                userRegisterDTO.getPassword(),
+                userRegisterDTO.getDisplayedName());
+        return userRegisterResponseDTO;
     }
 
 }

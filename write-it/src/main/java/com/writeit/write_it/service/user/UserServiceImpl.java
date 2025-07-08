@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserRegisterResponseDTO register(String username, String password) {
+    public UserRegisterResponseDTO register(String username, String password, String displayedName) {
         // if (userDAO.existsByUsername(username)) {
         // throw new IllegalArgumentException("User already exists");
         // }
@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
         // String encodedPassword = passwordEncoder.encode(password);
         // UserRegisterDTO userRegisterDTO = new UserRegisterDTO(username,
         // encodedPassword);
-        UserRegisterDTO userRegisterDTO = new UserRegisterDTO(username, password);
+        UserRegisterDTO userRegisterDTO = new UserRegisterDTO(username, password, displayedName);
         User user = userDAO.create(userRegisterDTO);
         UserRegisterResponseDTO userRegisterResponseDTO = UserMapper.UserToUserRegisterResponseDTO(user);
         return userRegisterResponseDTO;

@@ -1,24 +1,23 @@
 package com.writeit.write_it.dto.user;
 
 public class UserRegisterResponseDTO {
-    private String username;
+    private String displayedName;
     private String status;
 
     public UserRegisterResponseDTO() {
-        // Default constructor
     }
 
-    public UserRegisterResponseDTO(String username, String password, String status) {
-        this.username = username;
+    public UserRegisterResponseDTO(String displayedName, String status) {
+        this.displayedName = displayedName;
         this.status = status;
     }
 
-    public String getUsername() {
-        return username;
+    public String getDisplayedName() {
+        return displayedName;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setDisplayedName(String displayedName) {
+        this.displayedName = displayedName;
     }
 
     public String getStatus() {

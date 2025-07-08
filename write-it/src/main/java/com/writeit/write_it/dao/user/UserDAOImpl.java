@@ -1,9 +1,5 @@
 package com.writeit.write_it.dao.user;
 
-import java.util.Optional;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.writeit.write_it.dto.user.UserRegisterDTO;
@@ -16,7 +12,6 @@ import jakarta.transaction.Transactional;
 public class UserDAOImpl implements UserDAO {
     private EntityManager entityManager;
 
-    @Autowired
     public UserDAOImpl(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
@@ -24,7 +19,9 @@ public class UserDAOImpl implements UserDAO {
     @Override
     @Transactional // for roll back safety
     public User create(UserRegisterDTO userRegisterDTO) {
-        User user = new User(userRegisterDTO.getUsername(), userRegisterDTO.getPassword());
+        User user = new User(userRegisterDTO.getUsername(),
+                userRegisterDTO.getPassword(),
+                userRegisterDTO.getDisplayedName());
         entityManager.persist(user);
         return user;
     }

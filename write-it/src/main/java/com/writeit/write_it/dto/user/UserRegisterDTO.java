@@ -3,15 +3,15 @@ package com.writeit.write_it.dto.user;
 public class UserRegisterDTO {
     private String username;
     private String password;
+    private String displayedName;
 
     public UserRegisterDTO() {
     }
 
-    // do i rly need this constructor? consider removing it later, cuz i already
-    // have the setters
-    public UserRegisterDTO(String username, String password) {
+    public UserRegisterDTO(String username, String password, String displayedName) {
         this.username = username;
         this.password = password;
+        this.displayedName = displayedName;
     }
 
     public void setUsername(String username) {
@@ -28,5 +28,13 @@ public class UserRegisterDTO {
 
     public String getPassword() {
         return password;
+    }
+
+    public void setDisplayedName(String displayedName) {
+        this.displayedName = displayedName;
+    }
+
+    public String getDisplayedName() {
+        return displayedName;
     }
 }

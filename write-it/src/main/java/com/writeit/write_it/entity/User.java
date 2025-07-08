@@ -23,6 +23,9 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "displayedName", nullable = false)
+    private String displayedName;
+
     @Column(name = "status", nullable = false)
     private String status = "active"; // create enum later
 
@@ -30,9 +33,10 @@ public class User {
     public User() {
     }
 
-    public User(String username, String password) {
+    public User(String username, String password, String displayedName) {
         this.username = username;
         this.password = password;
+        this.displayedName = displayedName;
     }
 
     // getters and setters
@@ -58,6 +62,14 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getDisplayedName() {
+        return displayedName;
+    }
+
+    public void setDisplayedName(String displayedName) {
+        this.displayedName = displayedName;
     }
 
     public String getStatus() {

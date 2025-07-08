@@ -9,6 +9,7 @@ public class UserMapper {
         User user = new User();
         user.setUsername(userRegisterDTO.getUsername());
         user.setPassword(userRegisterDTO.getPassword());
+        user.setDisplayedName(userRegisterDTO.getDisplayedName());
         return user;
     }
 
@@ -16,12 +17,13 @@ public class UserMapper {
         UserRegisterDTO userRegisterDTO = new UserRegisterDTO();
         userRegisterDTO.setUsername(user.getUsername());
         userRegisterDTO.setPassword(user.getPassword());
+        userRegisterDTO.setDisplayedName(user.getDisplayedName());
         return userRegisterDTO;
     }
 
     public static UserRegisterResponseDTO UserToUserRegisterResponseDTO(User user) {
         UserRegisterResponseDTO userRegisterResponseDTO = new UserRegisterResponseDTO();
-        userRegisterResponseDTO.setUsername(user.getUsername());
+        userRegisterResponseDTO.setDisplayedName(user.getDisplayedName());
         userRegisterResponseDTO.setStatus(user.getStatus());
         return userRegisterResponseDTO;
     }
