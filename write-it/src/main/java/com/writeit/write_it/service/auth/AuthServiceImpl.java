@@ -1,4 +1,4 @@
-package com.writeit.write_it.service.user;
+package com.writeit.write_it.service.auth;
 
 //import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,7 @@ import com.writeit.write_it.mapper.UserMapper;
 import jakarta.transaction.Transactional;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class AuthServiceImpl implements AuthService {
     private final UserDAO userDAO;
     // private final PasswordEncoder passwordEncoder;
 
@@ -20,7 +20,7 @@ public class UserServiceImpl implements UserService {
     // this.userDAO = userDAO;
     // this.passwordEncoder = passwordEncoder;
     // }
-    public UserServiceImpl(UserDAO userDAO) {
+    public AuthServiceImpl(UserDAO userDAO) {
         this.userDAO = userDAO;
     }
 

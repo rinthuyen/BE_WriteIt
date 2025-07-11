@@ -5,24 +5,24 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.writeit.write_it.dto.user.UserRegisterDTO;
 import com.writeit.write_it.dto.user.UserRegisterResponseDTO;
-import com.writeit.write_it.service.user.UserService;
+import com.writeit.write_it.service.auth.AuthService;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
-@RequestMapping("/api/users")
-public class UserController {
+@RequestMapping("/api/auth")
+public class AuthController {
 
-    private UserService userService;
+    private AuthService authService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
 
     @PostMapping("/register")
     public UserRegisterResponseDTO registerUser(@RequestBody UserRegisterDTO userRegisterDTO) {
-        UserRegisterResponseDTO userRegisterResponseDTO = userService.register(
+        UserRegisterResponseDTO userRegisterResponseDTO = authService.register(
                 userRegisterDTO.getUsername(),
                 userRegisterDTO.getPassword(),
                 userRegisterDTO.getDisplayedName());
