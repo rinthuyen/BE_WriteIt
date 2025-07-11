@@ -3,6 +3,7 @@ package com.writeit.write_it.mapper;
 import com.writeit.write_it.dto.user.UserRegisterDTO;
 import com.writeit.write_it.dto.user.UserRegisterResponseDTO;
 import com.writeit.write_it.entity.User;
+import com.writeit.write_it.entity.enums.Role;
 
 public class UserMapper {
     public static User UserRegisterDTOtoUser(UserRegisterDTO userRegisterDTO) {
@@ -10,6 +11,7 @@ public class UserMapper {
         user.setUsername(userRegisterDTO.getUsername());
         user.setPassword(userRegisterDTO.getPassword());
         user.setDisplayedName(userRegisterDTO.getDisplayedName());
+        user.setRole(Role.USER);
         return user;
     }
 

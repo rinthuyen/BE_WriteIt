@@ -1,7 +1,11 @@
 package com.writeit.write_it.entity;
 
+import com.writeit.write_it.entity.enums.Role;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,6 +32,10 @@ public class User {
 
     @Column(name = "status", nullable = false)
     private String status = "active"; // create enum later
+
+    @Column(name = "role", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.USER;
 
     // constructors
     public User() {
@@ -80,6 +88,14 @@ public class User {
         this.status = status;
     }
 
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
     // toString method
     @Override
     public String toString() {
@@ -88,6 +104,7 @@ public class User {
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", status='" + status + '\'' +
+                ", role=" + role + "\'" +
                 '}';
     }
 

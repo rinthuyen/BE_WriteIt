@@ -7,7 +7,6 @@ import com.writeit.write_it.dto.user.UserRegisterDTO;
 import com.writeit.write_it.dto.user.UserRegisterResponseDTO;
 import com.writeit.write_it.service.user.UserService;
 
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
