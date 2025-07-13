@@ -2,15 +2,16 @@ package com.writeit.write_it.dao.user;
 
 import java.util.Optional;
 
-import com.writeit.write_it.dto.user.UserRegisterDTO;
 import com.writeit.write_it.entity.User;
 
 public interface UserDAO {
-    User create(UserRegisterDTO userRegisterDTO);
+    User create(User user);
 
-    // User getUserById(Long id);
+    User getUserById(Long id);
 
-    // Optional<User> getUserByUsername(String username);
+    Optional<User> getUserByUsername(String username);
+
+    boolean existsByUsername(String username);
 
     // look into whether to use @Transactional or not for these two actions
 

@@ -7,6 +7,8 @@ import com.writeit.write_it.dto.user.UserRegisterDTO;
 import com.writeit.write_it.dto.user.UserRegisterResponseDTO;
 import com.writeit.write_it.service.auth.AuthService;
 
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -21,12 +23,10 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public UserRegisterResponseDTO registerUser(@RequestBody UserRegisterDTO userRegisterDTO) {
-        UserRegisterResponseDTO userRegisterResponseDTO = authService.register(
-                userRegisterDTO.getUsername(),
-                userRegisterDTO.getPassword(),
-                userRegisterDTO.getDisplayedName());
+    public UserRegisterResponseDTO register(@RequestBody @Valid UserRegisterDTO userRegisterDTO) {
+        UserRegisterResponseDTO userRegisterResponseDTO = authService.register(userRegisterDTO);
         return userRegisterResponseDTO;
     }
 
+    // @PostMapping("/login")
 }

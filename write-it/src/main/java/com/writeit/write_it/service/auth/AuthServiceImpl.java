@@ -1,5 +1,6 @@
 package com.writeit.write_it.service.auth;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 //import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -7,6 +8,7 @@ import com.writeit.write_it.dao.user.UserDAO;
 import com.writeit.write_it.dto.user.UserRegisterDTO;
 import com.writeit.write_it.dto.user.UserRegisterResponseDTO;
 import com.writeit.write_it.entity.User;
+import com.writeit.write_it.exception.UsernameAlreadyExistsException;
 import com.writeit.write_it.mapper.UserMapper;
 
 import jakarta.transaction.Transactional;
@@ -14,28 +16,25 @@ import jakarta.transaction.Transactional;
 @Service
 public class AuthServiceImpl implements AuthService {
     private final UserDAO userDAO;
-    // private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    // public UserServiceImpl(UserDAO userDAO, PasswordEncoder passwordEncoder) {
-    // this.userDAO = userDAO;
-    // this.passwordEncoder = passwordEncoder;
-    // }
-    public AuthServiceImpl(UserDAO userDAO) {
+    public AuthServiceImpl(UserDAO userDAO, PasswordEncoder passwordEncoder) {
         this.userDAO = userDAO;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     @Transactional
-    public UserRegisterResponseDTO register(String username, String password, String displayedName) {
-        // if (userDAO.existsByUsername(username)) {
-        // throw new IllegalArgumentException("User already exists");
-        // }
+    public UserRegisterResponseDTO register(UserRegisterDTO userRegisterDTO) {
+        if (userDAO.existsByUsername(userRegisterDTO.getUsername())) {
+            throw new UsernameAlreadyExistsException();
+        }
 
-        // String encodedPassword = passwordEncoder.encode(password);
-        // UserRegisterDTO userRegisterDTO = new UserRegisterDTO(username,
-        // encodedPassword);
-        UserRegisterDTO userRegisterDTO = new UserRegisterDTO(username, password, displayedName);
-        User user = userDAO.create(userRegisterDTO);
+        String encodedPassword = passwordEncoder.encode(userRegisterDTO.getPassword());
+        userRegisterDTO.setPassword(encodedPassword);
+
+        User user = UserMapper.UserRegisterDTOtoUser(userRegisterDTO);
+        userDAO.create(user);
         UserRegisterResponseDTO userRegisterResponseDTO = UserMapper.UserToUserRegisterResponseDTO(user);
         return userRegisterResponseDTO;
     }
