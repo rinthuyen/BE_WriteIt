@@ -1,4 +1,4 @@
-package com.writeit.write_it.config;
+package com.writeit.write_it.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,8 +10,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.writeit.write_it.security.JwtAuthenticationEntryPoint;
-import com.writeit.write_it.security.JwtAuthenticationFilter;
+import com.writeit.write_it.security.jwt.JwtAuthenticationEntryPoint;
+import com.writeit.write_it.security.jwt.JwtAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {

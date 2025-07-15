@@ -1,4 +1,4 @@
-package com.writeit.write_it.security;
+package com.writeit.write_it.security.userdetails;
 
 import java.util.Collection;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.writeit.write_it.entity.User;
 import com.writeit.write_it.entity.enums.Role;
 import com.writeit.write_it.entity.enums.Status;
 
@@ -48,4 +49,8 @@ public class CustomUserDetails implements UserDetails {
         return status == Status.ACTIVE;
     }
 
+    public static CustomUserDetails build(User user) {
+        return new CustomUserDetails(user.getId(), user.getUsername(), user.getPassword(), user.getDisplayedName(),
+                user.getStatus(), user.getRole());
+    }
 }
