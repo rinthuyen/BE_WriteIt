@@ -5,11 +5,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.writeit.write_it.dao.user.UserDAO;
-import com.writeit.write_it.dto.user.UserRegisterDTO;
-import com.writeit.write_it.dto.user.UserRegisterResponseDTO;
 import com.writeit.write_it.entity.User;
 import com.writeit.write_it.exception.UsernameAlreadyExistsException;
 import com.writeit.write_it.mapper.UserMapper;
+import com.writeit.write_it.payload.request.UserRegisterDTO;
+import com.writeit.write_it.payload.response.UserRegisterResponseDTO;
 
 import jakarta.transaction.Transactional;
 

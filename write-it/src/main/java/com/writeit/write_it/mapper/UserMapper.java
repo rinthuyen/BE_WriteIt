@@ -1,8 +1,8 @@
 package com.writeit.write_it.mapper;
 
-import com.writeit.write_it.dto.user.UserRegisterDTO;
-import com.writeit.write_it.dto.user.UserRegisterResponseDTO;
 import com.writeit.write_it.entity.User;
+import com.writeit.write_it.payload.request.UserRegisterDTO;
+import com.writeit.write_it.payload.response.UserRegisterResponseDTO;
 
 public class UserMapper {
     public static User UserRegisterDTOtoUser(UserRegisterDTO dto) {

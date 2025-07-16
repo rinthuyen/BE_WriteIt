@@ -1,4 +1,4 @@
-package com.writeit.write_it.dto.user;
+package com.writeit.write_it.payload.response;
 
 import com.writeit.write_it.entity.enums.Status;
 
