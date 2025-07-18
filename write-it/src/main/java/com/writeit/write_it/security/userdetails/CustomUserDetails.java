@@ -7,7 +7,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.writeit.write_it.entity.User;
-import com.writeit.write_it.entity.enums.Role;
 import com.writeit.write_it.entity.enums.Status;
 
 import lombok.Getter;
@@ -17,16 +16,21 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
-    private final Long id;
-    private final String username;
-    private final String password;
-    private final String displayedName;
-    private final Status status;
-    private final Role role;
+    private final User user;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(() -> "ROLE_" + role.name());
+        return List.of(() -> "ROLE_" + user.getRole().name());
+    }
+
+    @Override
+    public String getPassword() {
+        return user.getPassword();
+    }
+
+    @Override
+    public String getUsername() {
+        return user.getUsername();
     }
 
     @Override
@@ -46,11 +50,10 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return status == Status.ACTIVE;
+        return user.getStatus() == Status.ACTIVE;
     }
 
     public static CustomUserDetails build(User user) {
-        return new CustomUserDetails(user.getId(), user.getUsername(), user.getPassword(), user.getDisplayedName(),
-                user.getStatus(), user.getRole());
+        return new CustomUserDetails(user);
     }
 }

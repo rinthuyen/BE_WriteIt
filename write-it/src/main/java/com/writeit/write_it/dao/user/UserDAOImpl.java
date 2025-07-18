@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.writeit.write_it.entity.User;
 
 import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 
 @Repository
 public class UserDAOImpl implements UserDAO {
@@ -20,18 +20,18 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     @Transactional
-    public User create(User user) {
+    public User save(User user) {
         entityManager.persist(user);
         return user;
     }
 
     @Override
-    public User getUserById(Long id) {
+    public User findById(Long id) {
         return entityManager.find(User.class, id);
     }
 
     @Override
-    public Optional<User> getUserByUsername(String username) {
+    public Optional<User> findByUsername(String username) {
         List<User> user = entityManager.createQuery("SELECT u FROM User u WHERE u.username = :username", User.class)
                 .setParameter("username", username)
                 .getResultList();

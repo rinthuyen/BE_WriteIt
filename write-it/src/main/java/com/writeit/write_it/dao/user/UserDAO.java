@@ -5,11 +5,11 @@ import java.util.Optional;
 import com.writeit.write_it.entity.User;
 
 public interface UserDAO {
-    User create(User user);
+    User save(User user);
 
-    User getUserById(Long id);
+    User findById(Long id);
 
-    Optional<User> getUserByUsername(String username);
+    Optional<User> findByUsername(String username);
 
     boolean existsByUsername(String username);
 

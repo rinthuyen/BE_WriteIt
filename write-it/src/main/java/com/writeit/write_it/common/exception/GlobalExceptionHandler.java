@@ -1,4 +1,4 @@
-package com.writeit.write_it.exception;
+package com.writeit.write_it.common.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
