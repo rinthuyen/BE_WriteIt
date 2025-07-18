@@ -6,15 +6,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.writeit.write_it.common.exception.InvalidCredentialsException;
+import com.writeit.write_it.common.exception.InvalidRefreshTokenException;
 import com.writeit.write_it.common.exception.UsernameAlreadyExistsException;
-import com.writeit.write_it.common.mapper.UserMapper;
 import com.writeit.write_it.dao.user.UserDAO;
+import com.writeit.write_it.dto.request.LoginRequestDTO;
+import com.writeit.write_it.dto.request.RegisterRequestDTO;
+import com.writeit.write_it.dto.response.AuthTokenResponseDTO;
+import com.writeit.write_it.dto.response.RegisterResponseDTO;
 import com.writeit.write_it.entity.RefreshToken;
 import com.writeit.write_it.entity.User;
-import com.writeit.write_it.payload.request.UserLoginRequestDTO;
-import com.writeit.write_it.payload.request.UserRegisterRequestDTO;
-import com.writeit.write_it.payload.response.UserLoginResponseDTO;
-import com.writeit.write_it.payload.response.UserRegisterResponseDTO;
 import com.writeit.write_it.security.jwt.JwtUtils;
 import com.writeit.write_it.security.userdetails.CustomUserDetails;
 import com.writeit.write_it.service.refresh_token.RefreshTokenService;
@@ -29,8 +30,12 @@ public class AuthServiceImpl implements AuthService {
     private final JwtUtils jwtUtils;
     private final RefreshTokenService refreshTokenService;
 
-    public AuthServiceImpl(UserDAO userDAO, PasswordEncoder passwordEncoder,
-            AuthenticationManager authenticationManager, JwtUtils jwtUtils, RefreshTokenService refreshTokenService) {
+    public AuthServiceImpl(
+            UserDAO userDAO,
+            PasswordEncoder passwordEncoder,
+            AuthenticationManager authenticationManager,
+            JwtUtils jwtUtils,
+            RefreshTokenService refreshTokenService) {
         this.userDAO = userDAO;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
@@ -40,41 +45,59 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public UserRegisterResponseDTO register(UserRegisterRequestDTO userRegisterRequestDTO) {
-        if (userDAO.existsByUsername(userRegisterRequestDTO.getUsername())) {
+    public RegisterResponseDTO register(RegisterRequestDTO requestDTO) {
+        if (userDAO.existsByUsername(requestDTO.getUsername())) {
             throw new UsernameAlreadyExistsException();
         }
 
-        String encodedPassword = passwordEncoder.encode(userRegisterRequestDTO.getPassword());
-        userRegisterRequestDTO.setPassword(encodedPassword);
-
-        User user = UserMapper.UserRegisterDTOtoUser(userRegisterRequestDTO);
+        String encodedPassword = passwordEncoder.encode(requestDTO.getPassword());
+        User user = new User(requestDTO.getUsername(), encodedPassword, requestDTO.getDisplayedName());
         userDAO.save(user);
-        UserRegisterResponseDTO userRegisterResponseDTO = UserMapper.UserToUserRegisterResponseDTO(user);
-        return userRegisterResponseDTO;
+
+        RegisterResponseDTO responseDTO = new RegisterResponseDTO(user.getDisplayedName(), user.getStatus());
+
+        return responseDTO;
     }
 
     @Override
-    public UserLoginResponseDTO login(UserLoginRequestDTO userLoginRequestDTO) {
-        Authentication auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(userLoginRequestDTO.getUsername(),
-                        userLoginRequestDTO.getPassword()));
+    public AuthTokenResponseDTO login(LoginRequestDTO requestDTO) {
+        Authentication auth;
+        try {
+            auth = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            requestDTO.getUsername(),
+                            requestDTO.getPassword()));
+        } catch (Exception ex) {
+            throw new InvalidCredentialsException();
+        }
+
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
         User user = userDetails.getUser();
 
         String accessToken = jwtUtils.generateToken(user.getUsername());
-        RefreshToken refreshToken = refreshTokenService.create(user, userLoginRequestDTO.getDeviceInfo());
-        return new UserLoginResponseDTO(accessToken, refreshToken.getToken());
+        RefreshToken refreshToken = refreshTokenService.create(user, requestDTO.getDeviceInfo());
+
+        AuthTokenResponseDTO responseDTO = new AuthTokenResponseDTO(accessToken, refreshToken.getToken());
+        return responseDTO;
     }
 
     @Override
-    public UserLoginResponseDTO refresh(String token) {
-        RefreshToken refreshToken = refreshTokenService.validate(token);
+    public AuthTokenResponseDTO refresh(String token) {
+        RefreshToken refreshToken;
+        try {
+            refreshToken = refreshTokenService.validate(token);
+        } catch (Exception ex) {
+            throw new InvalidRefreshTokenException();
+        }
+
         refreshTokenService.revoke(token);
+
         User user = refreshToken.getUser();
         String accessToken = jwtUtils.generateToken(user.getUsername());
         RefreshToken newRefreshToken = refreshTokenService.create(user, refreshToken.getDeviceInfo());
-        return new UserLoginResponseDTO(accessToken, newRefreshToken.getToken());
+
+        AuthTokenResponseDTO responseDTO = new AuthTokenResponseDTO(accessToken, newRefreshToken.getToken());
+        return responseDTO;
     }
 
 }

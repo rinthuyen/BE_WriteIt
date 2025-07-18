@@ -1,14 +1,14 @@
 package com.writeit.write_it.service.auth;
 
-import com.writeit.write_it.payload.request.UserLoginRequestDTO;
-import com.writeit.write_it.payload.request.UserRegisterRequestDTO;
-import com.writeit.write_it.payload.response.UserLoginResponseDTO;
-import com.writeit.write_it.payload.response.UserRegisterResponseDTO;
+import com.writeit.write_it.dto.request.LoginRequestDTO;
+import com.writeit.write_it.dto.request.RegisterRequestDTO;
+import com.writeit.write_it.dto.response.AuthTokenResponseDTO;
+import com.writeit.write_it.dto.response.RegisterResponseDTO;
 
 public interface AuthService {
-    UserRegisterResponseDTO register(UserRegisterRequestDTO userRegisterRequestDTO);
+    RegisterResponseDTO register(RegisterRequestDTO userRegisterRequestDTO);
 
-    UserLoginResponseDTO login(UserLoginRequestDTO userLoginRequestDTO);
+    AuthTokenResponseDTO login(LoginRequestDTO userLoginRequestDTO);
 
-    UserLoginResponseDTO refresh(String refreshToken);
+    AuthTokenResponseDTO refresh(String refreshToken);
 }
