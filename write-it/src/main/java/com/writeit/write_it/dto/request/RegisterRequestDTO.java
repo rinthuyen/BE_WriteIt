@@ -1,11 +1,11 @@
-package com.writeit.write_it.payload.request;
+package com.writeit.write_it.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class UserRegisterRequestDTO {
+public class RegisterRequestDTO {
 
     @NotBlank(message = "Username is required")
     @Size(min = 4, max = 20, message = "Username must be between 4 and 20 characters")

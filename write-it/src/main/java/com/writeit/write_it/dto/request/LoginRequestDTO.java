@@ -1,10 +1,10 @@
-package com.writeit.write_it.payload.request;
+package com.writeit.write_it.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class UserLoginRequestDTO {
+public class LoginRequestDTO {
 
     @NotBlank(message = "Username is required")
     private String username;

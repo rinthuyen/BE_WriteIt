@@ -14,10 +14,12 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Jwts.SIG;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 public class JwtUtils {
-    private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
+
     @Value("${jwt.secret}")
     private String jwtSecret;
 
@@ -37,7 +39,7 @@ public class JwtUtils {
                 .expiration(expiry)
                 .signWith(getSignInKey(), SIG.HS256)
                 .compact();
-        logger.debug("JWT token generated for user {}, expires at {}", username, expiry);
+        log.debug("JWT token generated for user {}, expires at {}", username, expiry);
         return token;
     }
 
@@ -45,11 +47,11 @@ public class JwtUtils {
         try {
             String extractedUsername = extractUsername(token);
             boolean valid = extractedUsername.equals(expectedUsername) && !isTokenExpired(token);
-            logger.debug("Token validation for user '{}': {}", expectedUsername, valid ? "valid" : "invalid");
+            log.debug("Token validation for user '{}': {}", expectedUsername, valid ? "valid" : "invalid");
             return valid;
         } catch (Exception e) {
-            logger.warn("JWT token validation failed: {}", e.getClass().getSimpleName());
-            logger.debug("Detailed error: {}", e.getMessage());
+            log.warn("JWT token validation failed: {}", e.getClass().getSimpleName());
+            log.debug("Detailed error: {}", e.getMessage());
             // avoid exposing potentially sensitive information
             return false;
         }
@@ -79,7 +81,7 @@ public class JwtUtils {
                     .parseSignedClaims(token)
                     .getPayload();
         } catch (Exception e) {
-            logger.error("Error parsing JWT token: {}", e.getMessage());
+            log.error("Error parsing JWT token: {}", e.getMessage());
             throw e;
             // critical error, best to stop if fail to parse
         }

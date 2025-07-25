@@ -1,4 +1,4 @@
-package com.writeit.write_it.payload.response;
+package com.writeit.write_it.dto.response;
 
 import com.writeit.write_it.entity.enums.Status;
 
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserRegisterResponseDTO {
+public class RegisterResponseDTO {
     private String displayedName;
     private Status status;
 }

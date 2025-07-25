@@ -4,9 +4,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -18,9 +17,8 @@ import com.writeit.write_it.security.userdetails.CustomUserDetailsService;
 import java.io.IOException;
 
 @Component
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-
-    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     private final JwtUtils jwtUtils;
     private final CustomUserDetailsService userDetailsService;
@@ -39,7 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            logger.debug("No JWT token found in Authorization header for request to {}", request.getRequestURI());
+            log.debug("No JWT token found in Authorization header for request to {}", request.getRequestURI());
             filterChain.doFilter(request, response);
             return;
         }
@@ -48,16 +46,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String username = jwtUtils.extractUsername(token);
 
         if (username == null) {
-            logger.warn("Failed to extract username from token for request to {}", request.getRequestURI());
+            log.warn("Failed to extract username from token for request to {}", request.getRequestURI());
         } else {
-            logger.debug("JWT token found. Attempting authentication for user: {}", username);
+            log.debug("JWT token found. Attempting authentication for user: {}", username);
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             var userDetails = userDetailsService.loadUserByUsername(username);
 
             if (jwtUtils.isTokenValid(token, userDetails.getUsername())) {
-                logger.info("JWT token is valid. User '{}' authenticated successfully for {}", username,
+                log.info("JWT token is valid. User '{}' authenticated successfully for {}", username,
                         request.getRequestURI());
                 var authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
@@ -69,7 +67,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             } else {
-                logger.warn("Invalid JWT token for user '{}' on request to {}", username, request.getRequestURI());
+                log.warn("Invalid JWT token for user '{}' on request to {}", username, request.getRequestURI());
             }
         }
 
