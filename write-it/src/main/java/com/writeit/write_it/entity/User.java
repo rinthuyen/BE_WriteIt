@@ -1,17 +1,31 @@
 package com.writeit.write_it.entity;
 
+import com.writeit.write_it.entity.enums.Role;
+import com.writeit.write_it.entity.enums.Status;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "users")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString(exclude = "password")
 public class User {
-    // field
-    // uses auto-incrementing primary key
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -23,61 +37,23 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "displayedName", nullable = false)
+    private String displayedName;
+
+    @Column(name = "email")
+    private String email;
+
     @Column(name = "status", nullable = false)
-    private String status = "active"; // create enum later
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.ACTIVE;
 
-    // constructors
-    public User() {
-    }
+    @Column(name = "role", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.USER;
 
-    public User(String username, String password) {
+    public User(String username, String password, String displayedName) {
         this.username = username;
         this.password = password;
+        this.displayedName = displayedName;
     }
-
-    // getters and setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    // toString method
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", status='" + status + '\'' +
-                '}';
-    }
-
-    // note to self: look into using Lombok to reduce boilerplate code
 }
