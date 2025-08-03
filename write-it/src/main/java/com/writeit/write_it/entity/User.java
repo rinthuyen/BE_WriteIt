@@ -40,6 +40,9 @@ public class User {
     @Column(name = "displayedName", nullable = false)
     private String displayedName;
 
+    @Column(name = "email")
+    private String email;
+
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status = Status.ACTIVE;

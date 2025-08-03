@@ -8,7 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.writeit.write_it.common.exception.InvalidRefreshTokenException;
+import com.writeit.write_it.common.exception.CustomException;
+import com.writeit.write_it.common.exception.ExceptionMessage;
 import com.writeit.write_it.dao.refresh_token.RefreshTokenDAO;
 import com.writeit.write_it.entity.RefreshToken;
 import com.writeit.write_it.entity.User;
@@ -39,9 +40,9 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     public RefreshToken validate(String token) {
-        return refreshTokenDAO.findByToken(token)
+        return refreshTokenDAO.findById(token)
                 .filter(rt -> !rt.isRevoked() && rt.getExpiresInstant().isAfter(Instant.now()))
-                .orElseThrow(() -> new InvalidRefreshTokenException());
+                .orElseThrow(() -> new CustomException(ExceptionMessage.InvalidRefreshToken));
     }
 
     @Override

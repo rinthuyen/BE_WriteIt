@@ -9,6 +9,7 @@ import com.writeit.write_it.dto.request.RefreshRequestDTO;
 import com.writeit.write_it.dto.request.RegisterRequestDTO;
 import com.writeit.write_it.dto.response.AuthTokenResponseDTO;
 import com.writeit.write_it.dto.response.RegisterResponseDTO;
+import com.writeit.write_it.dto.response.SuccessResponse;
 import com.writeit.write_it.service.auth.AuthService;
 
 import jakarta.validation.Valid;
@@ -29,21 +30,22 @@ public class AuthController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public RegisterResponseDTO register(@RequestBody @Valid RegisterRequestDTO request) {
+    public SuccessResponse<RegisterResponseDTO> register(@RequestBody @Valid RegisterRequestDTO request) {
         RegisterResponseDTO response = authService.register(request);
-        return response;
+        return new SuccessResponse<RegisterResponseDTO>(HttpStatus.CREATED, response);
     }
 
     @PostMapping("/login")
-    public AuthTokenResponseDTO login(@RequestBody @Valid LoginRequestDTO request) {
+    @ResponseStatus(HttpStatus.OK)
+    public SuccessResponse<AuthTokenResponseDTO> login(@RequestBody @Valid LoginRequestDTO request) {
         AuthTokenResponseDTO response = authService.login(request);
-        return response;
+        return new SuccessResponse<AuthTokenResponseDTO>(HttpStatus.OK, response);
     }
 
     @PostMapping("/refresh")
-    public AuthTokenResponseDTO refresh(@RequestBody @Valid RefreshRequestDTO request) {
+    public SuccessResponse<AuthTokenResponseDTO> refresh(@RequestBody @Valid RefreshRequestDTO request) {
         AuthTokenResponseDTO response = authService.refresh(request.getRefreshToken());
-        return response;
+        return new SuccessResponse<AuthTokenResponseDTO>(HttpStatus.OK, response);
     }
 
 }

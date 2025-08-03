@@ -1,37 +1,19 @@
 package com.writeit.write_it.dao.refresh_token;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.writeit.write_it.dao.crud.CrudDAOImpl;
 import com.writeit.write_it.entity.RefreshToken;
 import jakarta.persistence.EntityManager;
 
 @Repository
-public class RefreshTokenDAOImpl implements RefreshTokenDAO {
-    private EntityManager entityManager;
+public class RefreshTokenDAOImpl extends CrudDAOImpl<String, RefreshToken> implements RefreshTokenDAO {
 
     public RefreshTokenDAOImpl(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
-
-    @Override
-    @Transactional
-    public RefreshToken save(RefreshToken refreshToken) {
-        entityManager.persist(refreshToken);
-        return refreshToken;
-    }
-
-    @Override
-    public Optional<RefreshToken> findByToken(String token) {
-        List<RefreshToken> refreshTokens = entityManager
-                .createQuery("SELECT rf FROM RefreshToken rf WHERE rf.token = :token", RefreshToken.class)
-                .setParameter("token", token)
-                .getResultList();
-        return refreshTokens.stream().findFirst();
+        super(entityManager, RefreshToken.class);
     }
 
     @Override

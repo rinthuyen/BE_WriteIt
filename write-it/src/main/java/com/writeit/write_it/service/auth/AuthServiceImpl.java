@@ -6,9 +6,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.writeit.write_it.common.exception.InvalidCredentialsException;
-import com.writeit.write_it.common.exception.InvalidRefreshTokenException;
-import com.writeit.write_it.common.exception.UsernameAlreadyExistsException;
+import com.writeit.write_it.common.exception.CustomException;
+import com.writeit.write_it.common.exception.ExceptionMessage;
 import com.writeit.write_it.dao.user.UserDAO;
 import com.writeit.write_it.dto.request.LoginRequestDTO;
 import com.writeit.write_it.dto.request.RegisterRequestDTO;
@@ -47,7 +46,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public RegisterResponseDTO register(RegisterRequestDTO requestDTO) {
         if (userDAO.existsByUsername(requestDTO.getUsername())) {
-            throw new UsernameAlreadyExistsException();
+            throw new CustomException(ExceptionMessage.UsernameAlreadyExists);
         }
 
         String encodedPassword = passwordEncoder.encode(requestDTO.getPassword());
@@ -68,7 +67,7 @@ public class AuthServiceImpl implements AuthService {
                             requestDTO.getUsername(),
                             requestDTO.getPassword()));
         } catch (Exception ex) {
-            throw new InvalidCredentialsException();
+            throw new CustomException(ExceptionMessage.InvalidCredentials);
         }
 
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
@@ -87,7 +86,7 @@ public class AuthServiceImpl implements AuthService {
         try {
             refreshToken = refreshTokenService.validate(token);
         } catch (Exception ex) {
-            throw new InvalidRefreshTokenException();
+            throw new CustomException(ExceptionMessage.InvalidRefreshToken);
         }
 
         refreshTokenService.revoke(token);

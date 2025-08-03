@@ -1,13 +1,10 @@
 package com.writeit.write_it.dao.refresh_token;
 
-import java.util.Optional;
-
+import com.writeit.write_it.dao.crud.CrudDAO;
 import com.writeit.write_it.entity.RefreshToken;
 
-public interface RefreshTokenDAO {
+public interface RefreshTokenDAO extends CrudDAO<String, RefreshToken> {
     RefreshToken save(RefreshToken refreshToken);
-
-    Optional<RefreshToken> findByToken(String token);
 
     // soft delete a token when logging out
     void revokeToken(String token);
