@@ -8,6 +8,8 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.writeit.write_it.entity.User;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Jwts.SIG;
@@ -28,16 +30,20 @@ public class JwtUtils {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 
-    public String generateToken(String username) {
+    public String generateToken(User user) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + jwtExpirationMs);
         String token = Jwts.builder()
-                .subject(username)
+                .subject(user.getUsername())
+                .claim("displayedName", user.getDisplayedName())
+                .claim("role", user.getRole())
+                .claim("email", user.getEmail())
+                .claim("status", user.getStatus())
                 .issuedAt(now)
                 .expiration(expiry)
                 .signWith(getSignInKey(), SIG.HS256)
                 .compact();
-        log.debug("JWT token generated for user {}, expires at {}", username, expiry);
+        log.debug("JWT token generated for user {}, expires at {}", user.getUsername(), expiry);
         return token;
     }
 

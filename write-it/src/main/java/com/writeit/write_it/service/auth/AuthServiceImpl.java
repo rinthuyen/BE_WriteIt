@@ -73,7 +73,7 @@ public class AuthServiceImpl implements AuthService {
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
         User user = userDetails.getUser();
 
-        String accessToken = jwtUtils.generateToken(user.getUsername());
+        String accessToken = jwtUtils.generateToken(user);
         RefreshToken refreshToken = refreshTokenService.create(user, requestDTO.getDeviceInfo());
 
         AuthTokenResponseDTO responseDTO = new AuthTokenResponseDTO(accessToken, refreshToken.getToken());
@@ -92,7 +92,7 @@ public class AuthServiceImpl implements AuthService {
         refreshTokenService.revoke(token);
 
         User user = refreshToken.getUser();
-        String accessToken = jwtUtils.generateToken(user.getUsername());
+        String accessToken = jwtUtils.generateToken(user);
         RefreshToken newRefreshToken = refreshTokenService.create(user, refreshToken.getDeviceInfo());
 
         AuthTokenResponseDTO responseDTO = new AuthTokenResponseDTO(accessToken, newRefreshToken.getToken());
