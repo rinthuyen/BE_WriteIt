@@ -17,6 +17,7 @@ import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -40,6 +41,7 @@ public class AuthController {
         return new Response<Object>(HttpStatus.CREATED, response);
     }
 
+    //@CrossOrigin(origins = "http://localhost:4200") // Apply to this method
     @PostMapping("/login")
     public Response<Object> login(@RequestBody @Valid LoginRequestDTO request,
             BindingResult bindingResult) {
