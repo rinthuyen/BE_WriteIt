@@ -21,6 +21,11 @@ public class GlobalExceptionHandler {
                         .setStatus(HttpStatus.UNAUTHORIZED)
                         .setData(ExceptionMessage.InvalidCredentials);
                 break;
+            case ExceptionMessage.UserDeactivated:
+                response
+                        .setStatus(HttpStatus.FORBIDDEN)
+                        .setData(ExceptionMessage.UserDeactivated);
+                break;
             case ExceptionMessage.InvalidRefreshToken:
                 response
                         .setStatus(HttpStatus.UNAUTHORIZED)
@@ -30,6 +35,11 @@ public class GlobalExceptionHandler {
                 response
                         .setStatus(HttpStatus.CONFLICT)
                         .setData(ExceptionMessage.UsernameAlreadyExists);
+                break;
+            case ExceptionMessage.NotFoundException:
+                response
+                        .setStatus(HttpStatus.BAD_REQUEST)
+                        .setData(ExceptionMessage.NotFoundException);
                 break;
             default:
                 break;

@@ -11,12 +11,6 @@ public interface UserDAO extends CrudDAO<Long, User> {
 
     boolean existsByUsername(String username);
 
-    // look into whether to use @Transactional or not for these two actions
-
-    // void updateUser(User user);
-    // update password and username ykyk (update separately or juse send the whole
-    // user object) for both
-
     // void deleteUser(Long id);
     // self note: turn it to soft delete later on, so change the database schema as
     // well?

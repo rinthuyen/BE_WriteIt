@@ -35,7 +35,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         token.setExpiresInstant(Instant.now().plus(Duration.ofDays(expirationDays)));
         token.setDeviceInfo(deviceInfo);
         token.setRevoked(false);
-        return refreshTokenDAO.save(token);
+        return refreshTokenDAO.create(token);
     }
 
     @Override

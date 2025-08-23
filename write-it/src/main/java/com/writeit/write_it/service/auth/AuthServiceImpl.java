@@ -51,7 +51,7 @@ public class AuthServiceImpl implements AuthService {
 
         String encodedPassword = passwordEncoder.encode(requestDTO.getPassword());
         User user = new User(requestDTO.getUsername(), encodedPassword, requestDTO.getDisplayedName());
-        userDAO.save(user);
+        userDAO.create(user);
 
         RegisterResponseDTO responseDTO = new RegisterResponseDTO(user.getDisplayedName(), user.getStatus());
 
@@ -66,18 +66,28 @@ public class AuthServiceImpl implements AuthService {
                     new UsernamePasswordAuthenticationToken(
                             requestDTO.getUsername(),
                             requestDTO.getPassword()));
+                    CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+
+            if (!userDetails.isEnabled()) {
+                throw new CustomException(ExceptionMessage.UserDeactivated);
+            }
+            
+            User user = userDetails.getUser();
+
+            String accessToken = jwtUtils.generateToken(user);
+            RefreshToken refreshToken = refreshTokenService.create(user, requestDTO.getDeviceInfo());
+
+            AuthTokenResponseDTO responseDTO = new AuthTokenResponseDTO(accessToken, refreshToken.getToken());
+            return responseDTO;
         } catch (Exception ex) {
-            throw new CustomException(ExceptionMessage.InvalidCredentials);
+            switch (ex.getMessage()){
+                case ExceptionMessage.InvalidCredentials:
+                    throw new CustomException(ExceptionMessage.InvalidCredentials);
+                case ExceptionMessage.UserDeactivated:
+                    throw new CustomException(ExceptionMessage.UserDeactivated);
+            }
         }
-
-        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-        User user = userDetails.getUser();
-
-        String accessToken = jwtUtils.generateToken(user);
-        RefreshToken refreshToken = refreshTokenService.create(user, requestDTO.getDeviceInfo());
-
-        AuthTokenResponseDTO responseDTO = new AuthTokenResponseDTO(accessToken, refreshToken.getToken());
-        return responseDTO;
+        return null;
     }
 
     @Override

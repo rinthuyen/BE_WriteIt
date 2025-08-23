@@ -18,7 +18,7 @@ public class CrudDAOImpl<K, V> implements CrudDAO<K, V> {
 
     @Override
     @Transactional
-    public V save(V object) {
+    public V create(V object) {
         entityManager.persist(object);
         return object;
     }
@@ -26,5 +26,11 @@ public class CrudDAOImpl<K, V> implements CrudDAO<K, V> {
     @Override
     public Optional<V> findById(K id) {
         return Optional.ofNullable(entityManager.find(entityClass, id));
+    }
+
+    @Override
+    @Transactional
+    public void update(V object) {
+        entityManager.merge(object);
     }
 }
