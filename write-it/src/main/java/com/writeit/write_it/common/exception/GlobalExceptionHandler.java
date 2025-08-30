@@ -11,38 +11,34 @@ import com.writeit.write_it.dto.response.Response;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(CustomException.class)
+    @ExceptionHandler(AppException.class)
     public static Response<String> handleCustomException(
-            CustomException exception) {
+            AppException exception) {
         Response<String> response = new Response<>();
         switch (exception.getMessage()) {
-            case ExceptionMessage.InvalidCredentials:
-                response
+            case ExceptionMessage.INVALID_CREDENTIALS -> response
                         .setStatus(HttpStatus.UNAUTHORIZED)
-                        .setData(ExceptionMessage.InvalidCredentials);
-                break;
-            case ExceptionMessage.UserDeactivated:
-                response
+                        .setData(ExceptionMessage.INVALID_CREDENTIALS);
+            case ExceptionMessage.USER_DEACTIVATED -> response
                         .setStatus(HttpStatus.FORBIDDEN)
-                        .setData(ExceptionMessage.UserDeactivated);
-                break;
-            case ExceptionMessage.InvalidRefreshToken:
-                response
+                        .setData(ExceptionMessage.USER_DEACTIVATED);
+            case ExceptionMessage.INVALID_REFRESH_TOKEN -> response
                         .setStatus(HttpStatus.UNAUTHORIZED)
-                        .setData(ExceptionMessage.InvalidRefreshToken);
-                break;
-            case ExceptionMessage.UsernameAlreadyExists:
-                response
+                        .setData(ExceptionMessage.INVALID_REFRESH_TOKEN);
+            case ExceptionMessage.USERNAME_ALREADY_EXISTS -> response
                         .setStatus(HttpStatus.CONFLICT)
-                        .setData(ExceptionMessage.UsernameAlreadyExists);
-                break;
-            case ExceptionMessage.NotFoundException:
-                response
+                        .setData(ExceptionMessage.USERNAME_ALREADY_EXISTS);
+            case ExceptionMessage.NO_USER_WITH_GIVEN_USERNAME -> response
                         .setStatus(HttpStatus.BAD_REQUEST)
-                        .setData(ExceptionMessage.NotFoundException);
-                break;
-            default:
-                break;
+                        .setData(ExceptionMessage.NO_USER_WITH_GIVEN_USERNAME);
+            case ExceptionMessage.NO_USER_WITH_GIVEN_EMAIL -> response
+                        .setStatus(HttpStatus.BAD_REQUEST)
+                        .setData(ExceptionMessage.NO_USER_WITH_GIVEN_EMAIL);
+            case ExceptionMessage.INVALID_TOKEN_PURPOSE -> response
+                        .setStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+                        .setData(ExceptionMessage.INVALID_TOKEN_PURPOSE);
+            default -> {
+            }
         }
         return response;
     }
@@ -53,7 +49,7 @@ public class GlobalExceptionHandler {
                 .stream()
                 .map(x -> x.getDefaultMessage())
                 .findFirst();
-        return new Response<Object>(HttpStatus.BAD_REQUEST, error);
+        return new Response<>(HttpStatus.BAD_REQUEST, error);
 
     }
 }

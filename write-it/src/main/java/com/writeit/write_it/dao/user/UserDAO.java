@@ -11,6 +11,8 @@ public interface UserDAO extends CrudDAO<Long, User> {
 
     boolean existsByUsername(String username);
 
+    Optional<User> findByEmail(String email);
+
     // void deleteUser(Long id);
     // self note: turn it to soft delete later on, so change the database schema as
     // well?

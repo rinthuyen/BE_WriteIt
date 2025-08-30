@@ -1,4 +1,4 @@
-package com.writeit.write_it.common.custom_annotations;
+package com.writeit.write_it.common.annotations;
 
 import java.util.Arrays;
 import java.util.Set;

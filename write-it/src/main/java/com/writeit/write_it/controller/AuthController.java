@@ -8,9 +8,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.writeit.write_it.common.exception.GlobalExceptionHandler;
+import com.writeit.write_it.dto.request.ForgotPasswordRequestDTO;
 import com.writeit.write_it.dto.request.LoginRequestDTO;
 import com.writeit.write_it.dto.request.RefreshRequestDTO;
 import com.writeit.write_it.dto.request.RegisterRequestDTO;
+import com.writeit.write_it.dto.request.ResetPasswordRequestDTO;
 import com.writeit.write_it.dto.response.AuthTokenResponseDTO;
 import com.writeit.write_it.dto.response.RegisterResponseDTO;
 import com.writeit.write_it.dto.response.Response;
@@ -57,5 +59,25 @@ public class AuthController {
         AuthTokenResponseDTO response = authService.refresh(request.getRefreshToken());
         return new Response<>(HttpStatus.OK, response);
     }
+
+    @PostMapping("/forgot-password")
+    public Response<Object> forgotPassword(@RequestBody @Valid ForgotPasswordRequestDTO request, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return GlobalExceptionHandler.handleValidationException(bindingResult);
+        }
+        authService.forgotPassword(request);
+        return new Response<>(HttpStatus.OK, null);
+    }
+    
+
+    @PostMapping("/reset-password")
+    public Response<Object> resetPassword(@RequestBody @Valid ResetPasswordRequestDTO request, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return GlobalExceptionHandler.handleValidationException(bindingResult);
+        }
+        authService.resetPassword(request);
+        return new Response<>(HttpStatus.OK, null);
+    }
+    
 
 }

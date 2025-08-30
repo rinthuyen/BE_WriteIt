@@ -1,4 +1,4 @@
-package com.writeit.write_it.common.custom_annotations;
+package com.writeit.write_it.common.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

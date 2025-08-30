@@ -2,7 +2,7 @@ package com.writeit.write_it.service.user;
 
 import org.springframework.stereotype.Service;
 
-import com.writeit.write_it.common.exception.CustomException;
+import com.writeit.write_it.common.exception.AppException;
 import com.writeit.write_it.common.exception.ExceptionMessage;
 import com.writeit.write_it.dao.user.UserDAO;
 import com.writeit.write_it.dto.request.UserUpdateRequestDTO;
@@ -18,7 +18,7 @@ public class UserServiceImpl implements UserService{
     public void update(UserUpdateRequestDTO request, String username) {
         User user = userDAO
             .findByUsername(username)
-            .orElseThrow(() -> new CustomException(ExceptionMessage.NotFoundException));
+            .orElseThrow(() -> new AppException(ExceptionMessage.NO_USER_WITH_GIVEN_USERNAME));
         user.setDisplayedName(request.getDisplayedName());
         user.setEmail(request.getEmail());
         user.setStatus(request.getStatus());

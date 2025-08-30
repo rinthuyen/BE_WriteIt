@@ -28,12 +28,6 @@ public class UserController {
             return GlobalExceptionHandler.handleValidationException(bindingResult);
         }
         String username = authentication.getName();
-        // Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        // User user = (User) authentication.getPrincipal();
-
-        // if (!user.getUsername().equals(username)) {
-        //     return new Response<>(HttpStatus.UNAUTHORIZED, null);
-        // }
         userService.update(request, username);
         return new Response<>(HttpStatus.OK, null);
     }

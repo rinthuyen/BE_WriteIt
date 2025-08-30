@@ -1,6 +1,6 @@
 package com.writeit.write_it.dto.request;
 
-import com.writeit.write_it.common.custom_annotations.EnumValue;
+import com.writeit.write_it.common.annotations.EnumValue;
 import com.writeit.write_it.entity.enums.Status;
 
 import jakarta.validation.constraints.Email;
@@ -14,8 +14,10 @@ import lombok.NoArgsConstructor;
 public class UserUpdateRequestDTO {
     @NotBlank(message = "Displayed name cannot be empty")
     private String displayedName;
+
     @Email
     private String email;
+    
     @EnumValue
     @NotNull(message = "Status cannot be null")
     private Status status;
