@@ -1,10 +1,6 @@
 package com.writeit.write_it.security.jwt;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,7 +10,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.writeit.write_it.security.userdetails.CustomUserDetailsService;
 
-import java.io.IOException;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
@@ -52,7 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            var userDetails = userDetailsService.loadUserByUsername(username);
+             var userDetails = userDetailsService.loadUserByUsername(username);
 
             if (jwtUtils.isTokenValid(token, userDetails.getUsername())) {
                 log.info("JWT token is valid. User '{}' authenticated successfully for {}", username,

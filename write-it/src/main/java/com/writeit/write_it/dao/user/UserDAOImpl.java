@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
+
 import com.writeit.write_it.dao.crud.CrudDAOImpl;
 import com.writeit.write_it.entity.User;
 
@@ -17,7 +18,8 @@ public class UserDAOImpl extends CrudDAOImpl<Long, User> implements UserDAO {
 
     @Override
     public Optional<User> findByUsername(String username) {
-        List<User> user = entityManager.createQuery("SELECT u FROM User u WHERE u.username = :username", User.class)
+        String query = "SELECT u FROM User u WHERE u.username = :username";
+        List<User> user = entityManager.createQuery(query, User.class)
                 .setParameter("username", username)
                 .getResultList();
         return user.stream().findFirst();
@@ -25,10 +27,20 @@ public class UserDAOImpl extends CrudDAOImpl<Long, User> implements UserDAO {
 
     @Override
     public boolean existsByUsername(String username) {
+        String query = "SELECT COUNT(user) FROM User user WHERE user.username = :username";
         Long count = entityManager
-                .createQuery("SELECT COUNT(user) FROM User user WHERE user.username = :username", Long.class)
+                .createQuery(query, Long.class)
                 .setParameter("username", username)
                 .getSingleResult();
         return count > 0;
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email){
+        String query = "SELECT u FROM User u WHERE u.email = :email";
+        List<User> user = entityManager.createQuery(query, User.class)
+                .setParameter("email", email)
+                .getResultList();
+        return user.stream().findFirst();
     }
 }

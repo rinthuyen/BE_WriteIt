@@ -23,7 +23,7 @@ public class JwtUtils {
     @Value("${jwt.secret}")
     private String jwtSecret;
 
-    @Value("${jwt.access-token.expiration-ms}")
+    @Value("${token.ttl.access.ms}")
     private int jwtExpirationMs;
 
     private SecretKey getSignInKey() {
