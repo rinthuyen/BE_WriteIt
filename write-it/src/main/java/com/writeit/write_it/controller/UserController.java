@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.writeit.write_it.dto.request.UserUpdatePasswordRequestDTO;
 import com.writeit.write_it.dto.request.UserUpdateRequestDTO;
 import com.writeit.write_it.dto.response.Response;
 import com.writeit.write_it.service.user.UserService;
@@ -26,4 +27,10 @@ public class UserController {
         return Response.ok(null, "Update successful!");
     }
     
+    @PutMapping("/update-password")
+    public Response<Object> updatePassword(@RequestBody @Valid UserUpdatePasswordRequestDTO request, Authentication authentication) {
+        String username = authentication.getName();
+        userService.updatePassword(request, username);
+        return Response.ok(null, "Update successful!");
+    }
 }
