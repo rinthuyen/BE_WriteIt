@@ -20,13 +20,6 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 
-import org.springframework.http.HttpStatus;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
-
 @RestController
 @RequestMapping("/api/auth")
 @Slf4j
@@ -41,33 +34,32 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<Response<Object>> register(@RequestBody @Valid  RegisterRequestDTO request) {
         RegisterResponseDTO response = authService.register(request);
-        return ResponseEntity.ok(Response.ok(response));
+        return ResponseEntity.ok(Response.ok(response, "Registration successful!"));
     }
 
-    //@CrossOrigin(origins = "http://localhost:4200") // Apply to this method
     @PostMapping("/login")
     public ResponseEntity<Response<Object>> login(@RequestBody @Valid LoginRequestDTO request) {
         AuthTokenResponseDTO response = authService.login(request);
-        return ResponseEntity.ok(Response.ok(response));
+        return ResponseEntity.ok(Response.ok(response, "Login successful!"));
     }
 
     @PostMapping("/refresh")
-    public Response<Object> refresh(@RequestBody @Valid RefreshRequestDTO request) {
+    public ResponseEntity<Response<Object>> refresh(@RequestBody @Valid RefreshRequestDTO request) {
         AuthTokenResponseDTO response = authService.refresh(request.getRefreshToken());
-        return Response.ok(response);
+        return ResponseEntity.ok(Response.ok(response, "Refresh successful!"));
     }
 
     @PostMapping("/forgot-password")
-    public Response<Object> forgotPassword(@RequestBody @Valid ForgotPasswordRequestDTO request) {
+    public ResponseEntity<Response<Object>> forgotPassword(@RequestBody @Valid ForgotPasswordRequestDTO request) {
         authService.forgotPassword(request);
-        return Response.ok(null);
+        return ResponseEntity.ok(Response.ok(null, "Email sent successfully!"));
     }
     
 
     @PostMapping("/reset-password")
-    public Response<Object> resetPassword(@RequestBody @Valid ResetPasswordRequestDTO request) {
+    public ResponseEntity<Response<Object>> resetPassword(@RequestBody @Valid ResetPasswordRequestDTO request) {
         authService.resetPassword(request);
-        return Response.ok(null);
+        return ResponseEntity.ok(Response.ok(null, "Password reset successful!"));
     }
     
 

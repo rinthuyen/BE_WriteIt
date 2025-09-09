@@ -33,17 +33,17 @@ public class Response<T> {
         this(status, code, message, data, metadata, null);
     }
 
-    public static <T> Response<T> success(int httpStatus, T data) {
+    public static <T> Response<T> success(int httpStatus, T data, String message) {
         String reason = HttpStatus.valueOf(httpStatus).getReasonPhrase(); // "OK", "Created", etc.
-        return new Response<>(httpStatus, reason.toUpperCase(), null, data, null);
+        return new Response<>(httpStatus, reason.toUpperCase(), message, data, null);
     }
 
-    public static <T> Response<T> ok(T data) {
-        return success(HttpStatus.OK.value(), data);
+    public static <T> Response<T> ok(T data, String message) {
+        return success(HttpStatus.OK.value(), data, message);
     }
 
-    public static <T> Response<T> created(T data) {
-        return success(HttpStatus.CREATED.value(), data);
+    public static <T> Response<T> created(T data, String message) {
+        return success(HttpStatus.CREATED.value(), data, message);
     }
 
     public static <T> Response<T> error(ApiError error) {

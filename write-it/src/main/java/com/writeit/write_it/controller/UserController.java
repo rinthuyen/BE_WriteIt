@@ -23,7 +23,7 @@ public class UserController {
     public Response<Object> update( @RequestBody @Valid UserUpdateRequestDTO request, Authentication authentication) {
         String username = authentication.getName();
         userService.update(request, username);
-        return Response.ok(null);
+        return Response.ok(null, "User updated successfully!");
     }
     
 }
