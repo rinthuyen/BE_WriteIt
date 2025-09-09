@@ -26,9 +26,9 @@ public enum ApiError {
     ACCESS_TOKEN_EXPIRED        ("TOK_001", HttpStatus.UNAUTHORIZED,     "Access token expired."),
     ACCESS_TOKEN_INVALID        ("TOK_002", HttpStatus.UNAUTHORIZED,     "Access token invalid."),
     SINGLE_USE_TOKEN_INVALID    ("TOK_003", HttpStatus.UNAUTHORIZED,     "Single use token invalid."),
-    REFRESH_TOKEN_INVALID       ("TOK_004", HttpStatus.UNAUTHORIZED,     "Refresh token invalid."),
-    REFRESH_TOKEN_EXPIRED       ("TOK_005", HttpStatus.UNAUTHORIZED,     "Refresh token expired."),
-    REFRESH_TOKEN_REVOKED       ("TOK_006", HttpStatus.UNAUTHORIZED,     "Refresh token revoked."),
+    REFRESH_TOKEN_INVALID       ("TOK_004", HttpStatus.UNAUTHORIZED,     "Invalid refresh token."),
+    REFRESH_TOKEN_EXPIRED       ("TOK_005", HttpStatus.UNAUTHORIZED,     "Expired refresh token."),
+    REFRESH_TOKEN_REVOKED       ("TOK_006", HttpStatus.UNAUTHORIZED,     "Revoked refresh token."),
     TOKEN_PURPOSE_INVALID       ("TOK_007", HttpStatus.UNPROCESSABLE_ENTITY, "Invalid token purpose."),
 
     INTERNAL_ERROR("", HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
