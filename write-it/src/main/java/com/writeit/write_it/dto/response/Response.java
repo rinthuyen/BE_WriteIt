@@ -1,27 +1,62 @@
 package com.writeit.write_it.dto.response;
 
+import java.time.Instant;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
+import com.writeit.write_it.common.exception.ApiError;
+
+import lombok.Getter;
+
+@Getter
 public class Response<T> {
-    private int status;
-    private T data;
+    private final int status;
+    private final String code;     
+    private final String message;
+    private final T data;
+    private final Instant timestamp;
+    private final Map<String, Object> metadata;
 
-    public Response(HttpStatus status, T data) {
-        this.status = status.value();
+    private Response(int status, String code, String message, T data,
+                     Map<String, Object> metadata, Instant timestamp) {
+        this.status = status;
+        this.code = code;
+        this.message = message;
         this.data = data;
+        this.timestamp = (timestamp != null) ? timestamp : Instant.now();
+        this.metadata = (metadata == null || metadata.isEmpty()) ? null : Map.copyOf(metadata);
     }
 
-    public Response<T> setStatus(HttpStatus status) {
-        this.status = status.value();
-        return this;
+    private Response(int status, String code, String message, T data, Map<String, Object> metadata) {
+        this(status, code, message, data, metadata, null);
     }
 
-    public Response<T> setData(T data) {
-        this.data = data;
-        return this;
+    public static <T> Response<T> success(int httpStatus, T data) {
+        String reason = HttpStatus.valueOf(httpStatus).getReasonPhrase(); // "OK", "Created", etc.
+        return new Response<>(httpStatus, reason.toUpperCase(), null, data, null);
+    }
+
+    public static <T> Response<T> ok(T data) {
+        return success(HttpStatus.OK.value(), data);
+    }
+
+    public static <T> Response<T> created(T data) {
+        return success(HttpStatus.CREATED.value(), data);
+    }
+
+    public static <T> Response<T> error(ApiError error) {
+        return new Response<>(error.getStatus().value(), error.getCode(), error.getMessage(), null, null);
+    }
+
+    public static <T> Response<T> error(ApiError error, String message) {
+        return new Response<>(error.getStatus().value(), error.getCode(), message, null, null);
+    }
+
+    public Response<T> withMeta(String key, Object value) {
+        Map<String, Object> map = (this.metadata == null) ? new LinkedHashMap<>() : new LinkedHashMap<>(this.metadata);
+        map.put(key, value);
+        return new Response<>(status, code, message, data, map, this.timestamp);
     }
 }

@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.writeit.write_it.common.exception.ApiError;
 import com.writeit.write_it.common.exception.AppException;
-import com.writeit.write_it.common.exception.ExceptionMessage;
 import com.writeit.write_it.dao.token.TokenDAO;
 import com.writeit.write_it.entity.Token;
 import com.writeit.write_it.entity.User;
@@ -48,7 +48,7 @@ public class TokenServiceImpl implements TokenService {
     @Transactional
     public Token createSingleUseToken(User user, TokensPurpose purpose) {
         if (purpose == TokensPurpose.REFRESH) {
-            throw new AppException(ExceptionMessage.INVALID_TOKEN_PURPOSE);
+            throw new AppException(ApiError.TOKEN_PURPOSE_INVALID);
         }
         Instant now = Instant.now();
         Token token = new Token();
@@ -67,7 +67,7 @@ public class TokenServiceImpl implements TokenService {
                 .filter(t -> t.getPurpose() == TokensPurpose.REFRESH)
                 .filter(t -> !t.isRevoked())
                 .filter(t -> t.getExpiresInstant().isAfter(Instant.now()))
-                .orElseThrow(() -> new AppException(ExceptionMessage.INVALID_REFRESH_TOKEN));
+                .orElseThrow(() -> new AppException(ApiError.REFRESH_TOKEN_INVALID));
     }
 
     @Override
@@ -76,14 +76,14 @@ public class TokenServiceImpl implements TokenService {
                 .filter(t -> t.getPurpose() != TokensPurpose.REFRESH)
                 .filter(t -> t.getExpiresInstant().isAfter(Instant.now()))
                 .filter(t -> t.getUsedInstant() == null)
-                .orElseThrow(() -> new AppException(ExceptionMessage.INVALID_SINGLE_USE_TOKEN));
+                .orElseThrow(() -> new AppException(ApiError.SINGLE_USE_TOKEN_INVALID));
     }
 
     @Override
     @Transactional
     public boolean consumeSingleUseToken(TokensPurpose purpose, String token) {
         if (purpose == TokensPurpose.REFRESH) {
-            throw new AppException(ExceptionMessage.INVALID_TOKEN_PURPOSE);
+            throw new AppException(ApiError.TOKEN_PURPOSE_INVALID);
         }
         return tokenDAO.consumeSingleUseToken(purpose, token);
     }

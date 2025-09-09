@@ -6,14 +6,14 @@ import lombok.Data;
 
 @Data
 public class RegisterRequestDTO {
-    @NotBlank(message = "Username cannot be empty")
-    @Size(min = 4, max = 20, message = "Username must be between 4 and 20 characters")
+    @NotBlank(message = "{username.notBlank}")
+    @Size(min = 3, max = 20, message = "{username.size}")
     private String username;
 
-    @NotBlank(message = "Password cannot be empty")
-    @Size(min = 8, message = "Password must have at least 8 characters")
+    @NotBlank(message = "{password.notBlank}")
+    @Size(min = 5, message = "{password.size}")
     private String password;
 
-    @NotBlank(message = "Displayed name cannot be empty")
+    @NotBlank(message = "{displayed_name.notBlank}")
     private String displayedName;
 }

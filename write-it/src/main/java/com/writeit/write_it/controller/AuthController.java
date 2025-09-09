@@ -1,13 +1,11 @@
 package com.writeit.write_it.controller;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.validation.BindingResult;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.writeit.write_it.common.exception.GlobalExceptionHandler;
 import com.writeit.write_it.dto.request.ForgotPasswordRequestDTO;
 import com.writeit.write_it.dto.request.LoginRequestDTO;
 import com.writeit.write_it.dto.request.RefreshRequestDTO;
@@ -19,6 +17,7 @@ import com.writeit.write_it.dto.response.Response;
 import com.writeit.write_it.service.auth.AuthService;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 
 import org.springframework.http.HttpStatus;
@@ -30,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api/auth")
+@Slf4j
 public class AuthController {
 
     private final AuthService authService;
@@ -39,53 +39,35 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public Response<Object> register(@RequestBody @Valid RegisterRequestDTO request,
-            BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return GlobalExceptionHandler.handleValidationException(bindingResult);
-        }
+    public ResponseEntity<Response<Object>> register(@RequestBody @Valid  RegisterRequestDTO request) {
         RegisterResponseDTO response = authService.register(request);
-        return new Response<>(HttpStatus.CREATED, response);
+        return ResponseEntity.ok(Response.ok(response));
     }
 
     //@CrossOrigin(origins = "http://localhost:4200") // Apply to this method
     @PostMapping("/login")
-    public Response<Object> login(@RequestBody @Valid LoginRequestDTO request,
-            BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return GlobalExceptionHandler.handleValidationException(bindingResult);
-        }
+    public ResponseEntity<Response<Object>> login(@RequestBody @Valid LoginRequestDTO request) {
         AuthTokenResponseDTO response = authService.login(request);
-        return new Response<>(HttpStatus.OK, response);
+        return ResponseEntity.ok(Response.ok(response));
     }
 
     @PostMapping("/refresh")
-    public Response<Object> refresh(@RequestBody @Valid RefreshRequestDTO request,
-            BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return GlobalExceptionHandler.handleValidationException(bindingResult);
-        }
+    public Response<Object> refresh(@RequestBody @Valid RefreshRequestDTO request) {
         AuthTokenResponseDTO response = authService.refresh(request.getRefreshToken());
-        return new Response<>(HttpStatus.OK, response);
+        return Response.ok(response);
     }
 
     @PostMapping("/forgot-password")
-    public Response<Object> forgotPassword(@RequestBody @Valid ForgotPasswordRequestDTO request, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return GlobalExceptionHandler.handleValidationException(bindingResult);
-        }
+    public Response<Object> forgotPassword(@RequestBody @Valid ForgotPasswordRequestDTO request) {
         authService.forgotPassword(request);
-        return new Response<>(HttpStatus.OK, null);
+        return Response.ok(null);
     }
     
 
     @PostMapping("/reset-password")
-    public Response<Object> resetPassword(@RequestBody @Valid ResetPasswordRequestDTO request, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return GlobalExceptionHandler.handleValidationException(bindingResult);
-        }
+    public Response<Object> resetPassword(@RequestBody @Valid ResetPasswordRequestDTO request) {
         authService.resetPassword(request);
-        return new Response<>(HttpStatus.OK, null);
+        return Response.ok(null);
     }
     
 

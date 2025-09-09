@@ -12,13 +12,14 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class UserUpdateRequestDTO {
-    @NotBlank(message = "Displayed name cannot be empty")
+    @NotBlank(message = "{displayed_name.notBlank}")
     private String displayedName;
 
-    @Email
+    @NotBlank(message = "{email.notBlank}")
+    @Email(message="{email.invalid}")
     private String email;
     
-    @EnumValue
-    @NotNull(message = "Status cannot be null")
+    @EnumValue(message="{enum_value.invalid}")
+    @NotNull(message = "{status.notNull}")
     private Status status;
 }

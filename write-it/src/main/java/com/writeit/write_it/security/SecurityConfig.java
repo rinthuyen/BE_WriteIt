@@ -1,12 +1,10 @@
 package com.writeit.write_it.security;
 
 import java.util.Arrays;
-import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -28,12 +26,14 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint entryPoint;
     private final JwtAuthenticationFilter filter;
     private final CustomUserDetailsService userDetailsService;
+    private final JsonAccessDeniedHandler accessDeniedHandler;
 
     public SecurityConfig(JwtAuthenticationEntryPoint entryPoint, JwtAuthenticationFilter filter,
-            CustomUserDetailsService userDetailsService) {
+            CustomUserDetailsService userDetailsService, JsonAccessDeniedHandler accessDeniedHandler) {
         this.entryPoint = entryPoint;
         this.filter = filter;
         this.userDetailsService = userDetailsService;
+        this.accessDeniedHandler = accessDeniedHandler;
     }
 
     @Bean
@@ -41,7 +41,10 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(exception -> exception.authenticationEntryPoint(entryPoint))
+                .exceptionHandling(ex -> ex
+                    .authenticationEntryPoint(entryPoint)
+                    .accessDeniedHandler(accessDeniedHandler)
+                )
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         // decide on the authorized scope for each role and http operations later
@@ -50,7 +53,7 @@ public class SecurityConfig {
                         // .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
-                .httpBasic(Customizer.withDefaults());
+                .httpBasic(h -> h.disable());
 
         return http.build();
     }

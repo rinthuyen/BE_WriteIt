@@ -3,7 +3,6 @@ package com.writeit.write_it.dao.token;
 import java.time.Instant;
 
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.writeit.write_it.dao.crud.CrudDAOImpl;
 import com.writeit.write_it.entity.Token;
@@ -19,7 +18,7 @@ public class TokenDAOImpl extends CrudDAOImpl<String, Token> implements TokenDAO
     }
 
     @Override
-    @Transactional
+    // @Transactional
     public void revokeRefreshToken(String token) {
         Token refreshToken = entityManager.find(Token.class, token);
         if (refreshToken != null 
@@ -30,7 +29,7 @@ public class TokenDAOImpl extends CrudDAOImpl<String, Token> implements TokenDAO
     }
 
     @Override
-    @Transactional
+    // @Transactional
     public void revokeAllRefreshTokenByUserId(Long userId) {
         String query = "UPDATE Token t SET t.revoked = true WHERE t.user.id = :userId AND t.purpose = :purpose";
         entityManager.createQuery(query)
@@ -40,7 +39,7 @@ public class TokenDAOImpl extends CrudDAOImpl<String, Token> implements TokenDAO
     }
 
     @Override
-    @Transactional
+    // @Transactional
     public void cleanUpExpiredAndRevokedTokens() {
         Instant now = Instant.now();
         String deleteRefreshTokenQuery = "DELETE FROM Token t WHERE t.purpose = :purpose AND (t.expiresInstant < :now OR t.revoked = true)";
@@ -57,7 +56,7 @@ public class TokenDAOImpl extends CrudDAOImpl<String, Token> implements TokenDAO
     }
 
     @Override
-    @Transactional
+    // @Transactional
     public boolean consumeSingleUseToken(TokensPurpose purpose, String token) {
         String query = "UPDATE Token t SET t.usedInstant = :now WHERE t.purpose = :purpose AND t.token = :token AND t.usedInstant IS NULL AND t.expiresInstant > :now";
         int result = entityManager.createQuery(query)

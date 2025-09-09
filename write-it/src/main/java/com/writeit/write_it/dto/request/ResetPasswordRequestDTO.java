@@ -6,10 +6,10 @@ import lombok.Data;
 
 @Data
 public class ResetPasswordRequestDTO {
-    @NotBlank(message = "Token cannot be empty")
+    @NotBlank(message = "{token.notBlank}")
     private String token;
     
-    @NotBlank(message = "Password cannot be empty")
-    @Size(min = 8, message = "Password must have at least 8 characters")
+    @NotBlank(message = "{password.notBlank}")
+    @Size(min = 5, message = "{password.size}")
     private String password;
 }
