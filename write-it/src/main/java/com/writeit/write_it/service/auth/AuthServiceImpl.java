@@ -1,13 +1,23 @@
 package com.writeit.write_it.service.auth;
 
+import java.util.Optional;
+
+import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.CredentialsExpiredException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import com.writeit.write_it.common.exception.ApiError;
 import com.writeit.write_it.common.exception.AppException;
-import com.writeit.write_it.common.exception.ExceptionMessage;
 import com.writeit.write_it.dao.user.UserDAO;
 import com.writeit.write_it.dto.request.ForgotPasswordRequestDTO;
 import com.writeit.write_it.dto.request.LoginRequestDTO;
@@ -17,17 +27,19 @@ import com.writeit.write_it.dto.response.AuthTokenResponseDTO;
 import com.writeit.write_it.dto.response.RegisterResponseDTO;
 import com.writeit.write_it.entity.Token;
 import com.writeit.write_it.entity.User;
+import com.writeit.write_it.entity.enums.Status;
 import com.writeit.write_it.entity.enums.TokensPurpose;
 import com.writeit.write_it.security.jwt.JwtUtils;
 import com.writeit.write_it.security.userdetails.CustomUserDetails;
 import com.writeit.write_it.service.email.EmailService;
 import com.writeit.write_it.service.token.TokenService;
 
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class AuthServiceImpl implements AuthService {
     private final UserDAO userDAO;
     private final PasswordEncoder passwordEncoder;
@@ -40,73 +52,90 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public RegisterResponseDTO register(RegisterRequestDTO request) {
         if (userDAO.existsByUsername(request.getUsername())) {
-            throw new AppException(ExceptionMessage.USERNAME_ALREADY_EXISTS);
+            throw new AppException(ApiError.USERNAME_ALREADY_EXISTS);
         }
 
-        String encodedPassword = passwordEncoder.encode(request.getPassword());
-        User user = new User(request.getUsername(), encodedPassword, request.getDisplayedName());
+        String encoded = passwordEncoder.encode(request.getPassword());
+        User user = new User(request.getUsername(), encoded, request.getDisplayedName());
         userDAO.create(user);
 
-        RegisterResponseDTO responseDTO = new RegisterResponseDTO(user.getDisplayedName(), user.getStatus());
-
-        return responseDTO;
+        return new RegisterResponseDTO(user.getDisplayedName(), user.getStatus());
     }
 
     @Override
+    @Transactional
     public AuthTokenResponseDTO login(LoginRequestDTO request) {
         Authentication auth;
         try {
             auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.getUsername(),
-                            request.getPassword()));
-                    CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-
-            if (!userDetails.isEnabled()) {
-                throw new AppException(ExceptionMessage.USER_DEACTIVATED);
-            }
-            
-            User user = userDetails.getUser();
-
-            String accessToken = jwtUtils.generateToken(user);
-            Token refreshToken = tokenService.createRefreshToken(user, request.getDeviceInfo());
-
-            AuthTokenResponseDTO responseDTO = new AuthTokenResponseDTO(accessToken, refreshToken.getToken());
-            return responseDTO;
-        } catch (Exception ex) {
-            switch (ex.getMessage()){
-                case ExceptionMessage.INVALID_CREDENTIALS -> throw new AppException(ExceptionMessage.INVALID_CREDENTIALS);
-                case ExceptionMessage.USER_DEACTIVATED -> throw new AppException(ExceptionMessage.USER_DEACTIVATED);
-            }
+                new UsernamePasswordAuthenticationToken(
+                    request.getUsername(), request.getPassword()
+                )
+            );
+        } catch (AuthenticationException ex) {
+            if (ex instanceof DisabledException)           throw new AppException(ApiError.USER_DEACTIVATED);
+            if (ex instanceof LockedException)             throw new AppException(ApiError.ACCOUNT_LOCKED);
+            if (ex instanceof AccountExpiredException)     throw new AppException(ApiError.ACCOUNT_EXPIRED);
+            if (ex instanceof CredentialsExpiredException) throw new AppException(ApiError.CREDENTIALS_EXPIRED);
+            throw new AppException(ApiError.INVALID_CREDENTIALS);
         }
-        return null;
+
+        CustomUserDetails principal = (CustomUserDetails) auth.getPrincipal();
+        User user = principal.getUser();
+
+        String accessToken = jwtUtils.generateToken(user);
+        Token refreshToken = tokenService.createRefreshToken(user, request.getDeviceInfo());
+
+        return new AuthTokenResponseDTO(accessToken, refreshToken.getToken());
     }
 
+
     @Override
+    @Transactional
     public AuthTokenResponseDTO refresh(String token) {
-        Token refreshToken;
-        try {
-            refreshToken = tokenService.validateRefreshToken(token);
-        } catch (Exception ex) {
-            throw new AppException(ExceptionMessage.INVALID_REFRESH_TOKEN);
+        Token refreshToken = tokenService.validateRefreshToken(token);
+
+        User user = refreshToken.getUser();
+        if (user.getStatus() == Status.DEACTIVATED) {
+            tokenService.revokeRefreshToken(token);
+            throw new AppException(ApiError.USER_DEACTIVATED);
         }
 
         tokenService.revokeRefreshToken(token);
+        String access = jwtUtils.generateToken(user);
+        Token newRt = tokenService.createRefreshToken(user, refreshToken.getDeviceInfo());
 
-        User user = refreshToken.getUser();
-        String accessToken = jwtUtils.generateToken(user);
-        Token newRefreshToken = tokenService.createRefreshToken(user, refreshToken.getDeviceInfo());
-
-        AuthTokenResponseDTO responseDTO = new AuthTokenResponseDTO(accessToken, newRefreshToken.getToken());
-        return responseDTO;
+        return new AuthTokenResponseDTO(access, newRt.getToken());
     }
 
+
     @Override
+    @Transactional
     public void forgotPassword(ForgotPasswordRequestDTO request) {
-        User user = userDAO.findByEmail(request.getEmail())
-                .orElseThrow(() -> new AppException(ExceptionMessage.NO_USER_WITH_GIVEN_EMAIL));
+        // cant expose whether user exists or not
+        // User user = userDAO.findByEmail(request.getEmail())
+        //         .orElseThrow(() -> new AppException(ApiError.USER_NOT_FOUND));
+        
+        Optional<User> userOpt = userDAO.findByEmail(request.getEmail());
+        if (userOpt.isEmpty()) {
+            // return 200 regardless 
+            return;
+        }
+        User user = userOpt.get();
+
         Token passwordResetToken = tokenService.createSingleUseToken(user, TokensPurpose.RESET_PASSWORD);
-        sendPasswordResetEmail(user.getEmail(), passwordResetToken.getToken());
+
+        String token = passwordResetToken.getToken();
+
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override public void afterCommit() {
+                try {
+                    sendPasswordResetEmail(user.getEmail(), token);
+                } catch (RuntimeException e) {
+                    log.warn("Failed to send reset email to {}", user.getEmail(), e);
+                }
+            }
+        });
     }
 
     private void sendPasswordResetEmail(String recipient, String token) {
@@ -117,6 +146,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public void resetPassword(ResetPasswordRequestDTO request) {
         Token token = tokenService.validateSingleUseToken(request.getToken());
         User user = token.getUser();

@@ -1,55 +1,69 @@
 package com.writeit.write_it.common.exception;
 
-import java.util.Optional;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.BindingResult;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.writeit.write_it.dto.response.Response;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(AppException.class)
-    public static Response<String> handleCustomException(
-            AppException exception) {
-        Response<String> response = new Response<>();
-        switch (exception.getMessage()) {
-            case ExceptionMessage.INVALID_CREDENTIALS -> response
-                        .setStatus(HttpStatus.UNAUTHORIZED)
-                        .setData(ExceptionMessage.INVALID_CREDENTIALS);
-            case ExceptionMessage.USER_DEACTIVATED -> response
-                        .setStatus(HttpStatus.FORBIDDEN)
-                        .setData(ExceptionMessage.USER_DEACTIVATED);
-            case ExceptionMessage.INVALID_REFRESH_TOKEN -> response
-                        .setStatus(HttpStatus.UNAUTHORIZED)
-                        .setData(ExceptionMessage.INVALID_REFRESH_TOKEN);
-            case ExceptionMessage.USERNAME_ALREADY_EXISTS -> response
-                        .setStatus(HttpStatus.CONFLICT)
-                        .setData(ExceptionMessage.USERNAME_ALREADY_EXISTS);
-            case ExceptionMessage.NO_USER_WITH_GIVEN_USERNAME -> response
-                        .setStatus(HttpStatus.BAD_REQUEST)
-                        .setData(ExceptionMessage.NO_USER_WITH_GIVEN_USERNAME);
-            case ExceptionMessage.NO_USER_WITH_GIVEN_EMAIL -> response
-                        .setStatus(HttpStatus.BAD_REQUEST)
-                        .setData(ExceptionMessage.NO_USER_WITH_GIVEN_EMAIL);
-            case ExceptionMessage.INVALID_TOKEN_PURPOSE -> response
-                        .setStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-                        .setData(ExceptionMessage.INVALID_TOKEN_PURPOSE);
-            default -> {
-            }
-        }
-        return response;
+    public static Response<Object> handleAppException(AppException exception, HttpServletResponse response) {
+        response.setStatus(exception.getError().getStatus().value());
+        return Response.error(exception.getError());
     }
 
-    public static Response<Object> handleValidationException(BindingResult bindingResult) {
-        Optional<String> error = bindingResult
-                .getAllErrors()
-                .stream()
-                .map(x -> x.getDefaultMessage())
-                .findFirst();
-        return new Response<>(HttpStatus.BAD_REQUEST, error);
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Response<Object>> handleUnexpected(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Response.error(ApiError.INTERNAL_ERROR));
+    }
 
+    private static final Map<String, Integer> PRIORITY = Map.of(
+        "NotBlank", 0, "NotNull", 0, "NotEmpty", 0,
+        "Pattern", 1, "Email", 1, "EnumValue", 1,
+        "Size", 2, "Min", 2, "Max", 2
+    );
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Response<Object>> handleValidation(MethodArgumentNotValidException ex) {
+
+        List<FieldError> sorted = ex.getBindingResult()
+            .getFieldErrors()
+            .stream()
+            .sorted(Comparator.comparingInt(fe -> PRIORITY.getOrDefault(fe.getCode(), 100)))
+            .collect(Collectors.toList());
+
+        Map<String, String> firstPerField = new LinkedHashMap<>();
+        for (FieldError fe : sorted) {
+            firstPerField.putIfAbsent(fe.getField(), fe.getDefaultMessage());
+        }
+
+        // if i were to have class level errors
+        // var globalErrors = ex.getBindingResult().getGlobalErrors();
+        // if (!globalErrors.isEmpty()) {
+        //     String joined = globalErrors.stream()
+        //             .map(err -> err.getDefaultMessage())
+        //             .distinct()
+        //             .collect(Collectors.joining("; "));
+        //     firstPerField.put("_global", joined);
+        // }
+
+        Response<Object> body = Response.error(ApiError.VALIDATION_FAILED)
+                .withMeta("errors", firstPerField);
+
+        return ResponseEntity.badRequest().body(body);
     }
 }
