@@ -144,7 +144,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void resetPassword(ResetPasswordRequestDTO request) {
-        Token token = tokenService.validateSingleUseToken(request.getToken());
+        Token token = tokenService.validateSingleUseToken(request.getToken(), TokensPurpose.RESET_PASSWORD);
         User user = token.getUser();
         String encodedPassword = passwordEncoder.encode(request.getPassword());
         user.setPassword(encodedPassword);
