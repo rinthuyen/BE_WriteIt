@@ -1,5 +1,6 @@
 package com.writeit.write_it.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,16 +22,16 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
     private final UserService userService;
     @PutMapping("/update")
-    public Response<Object> update( @RequestBody @Valid UserUpdateRequestDTO request, Authentication authentication) {
+    public ResponseEntity<Response<Object>> update( @RequestBody @Valid UserUpdateRequestDTO request, Authentication authentication) {
         String username = authentication.getName();
         userService.update(request, username);
-        return Response.ok(null, "Update successful!");
+        return ResponseEntity.ok(Response.ok(null, "Update successful!"));
     }
     
     @PutMapping("/update-password")
-    public Response<Object> updatePassword(@RequestBody @Valid UserUpdatePasswordRequestDTO request, Authentication authentication) {
+    public ResponseEntity<Response<Object>> updatePassword(@RequestBody @Valid UserUpdatePasswordRequestDTO request, Authentication authentication) {
         String username = authentication.getName();
         userService.updatePassword(request, username);
-        return Response.ok(null, "Update successful!");
+        return ResponseEntity.ok(Response.ok(null, "Update successful!"));
     }
 }

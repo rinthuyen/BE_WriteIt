@@ -39,8 +39,18 @@ public class UserServiceImpl implements UserService{
         User user = userDAO
             .findByUsername(username)
             .orElseThrow(() -> new AppException(ApiError.USER_NOT_FOUND));
-        String encoded = passwordEncoder.encode(request.getPassword());
+
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+            throw new AppException(ApiError.CURRENT_PASSWORD_INVALID);
+        }
+
+        if (passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
+            throw new AppException(ApiError.NEW_PASSWORD_SAME_AS_OLD);
+        }
+
+        String encoded = passwordEncoder.encode(request.getNewPassword());
         user.setPassword(encoded);
+
         userDAO.update(user);
     }
 }
