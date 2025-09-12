@@ -77,7 +77,7 @@ public class AuthServiceImpl implements AuthService {
             if (ex instanceof LockedException)             throw new AppException(ApiError.ACCOUNT_LOCKED);
             if (ex instanceof AccountExpiredException)     throw new AppException(ApiError.ACCOUNT_EXPIRED);
             if (ex instanceof CredentialsExpiredException) throw new AppException(ApiError.CREDENTIALS_EXPIRED);
-            throw new AppException(ApiError.INVALID_CREDENTIALS);
+            throw new AppException(ApiError.CREDENTIALS_INVALID);
         }
 
         CustomUserDetails principal = (CustomUserDetails) auth.getPrincipal();
@@ -112,10 +112,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void forgotPassword(ForgotPasswordRequestDTO request) {
-        // cant expose whether user exists or not
-        // User user = userDAO.findByEmail(request.getEmail())
-        //         .orElseThrow(() -> new AppException(ApiError.USER_NOT_FOUND));
-        
         Optional<User> userOpt = userDAO.findByEmail(request.getEmail());
         if (userOpt.isEmpty()) {
             // return 200 regardless 
@@ -148,7 +144,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void resetPassword(ResetPasswordRequestDTO request) {
-        Token token = tokenService.validateSingleUseToken(request.getToken());
+        Token token = tokenService.validateSingleUseToken(request.getToken(), TokensPurpose.RESET_PASSWORD);
         User user = token.getUser();
         String encodedPassword = passwordEncoder.encode(request.getPassword());
         user.setPassword(encodedPassword);

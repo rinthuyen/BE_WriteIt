@@ -11,7 +11,7 @@ public interface TokenService {
 
     Token validateRefreshToken(String token);
 
-    Token validateSingleUseToken(String token);
+    Token validateSingleUseToken(String token, TokensPurpose expectedPurpose);
 
     boolean consumeSingleUseToken(TokensPurpose purpose, String token);
 
