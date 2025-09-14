@@ -2,6 +2,9 @@ package com.writeit.write_it.entity;
 
 import java.time.Instant;
 
+import org.hibernate.annotations.SQLRestriction;
+
+import com.writeit.write_it.common.auditing.AuditableAndSoftDeletable;
 import com.writeit.write_it.entity.enums.TokensPurpose;
 
 import jakarta.persistence.Column;
@@ -13,12 +16,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Entity
+@SQLRestriction("deleted_instant IS NULL")
 @Table(name = "token")
-public class Token {
+public class Token extends AuditableAndSoftDeletable {
 
     @Id
     @Column(name = "token")
@@ -29,7 +35,6 @@ public class Token {
     private TokensPurpose purpose;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    // @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 

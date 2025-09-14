@@ -2,6 +2,7 @@ package com.writeit.write_it.service.token;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +16,10 @@ import com.writeit.write_it.entity.Token;
 import com.writeit.write_it.entity.User;
 import com.writeit.write_it.entity.enums.TokensPurpose;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class TokenServiceImpl implements TokenService {
 
     @Value("${token.ttl.refresh.days}")
@@ -62,21 +66,45 @@ public class TokenServiceImpl implements TokenService {
 
 
     @Override
-    public Token validateRefreshToken(String token) {
-        return tokenDAO.findById(token)
-                .filter(t -> t.getPurpose() == TokensPurpose.REFRESH)
-                .filter(t -> !t.isRevoked())
-                .filter(t -> t.getExpiresInstant().isAfter(Instant.now()))
-                .orElseThrow(() -> new AppException(ApiError.REFRESH_TOKEN_INVALID));
+    public Token validateRefreshToken(String tokenValue) {
+        try {
+            Token t = tokenDAO.findById(tokenValue)
+                    .orElseThrow(() -> new IllegalStateException("not_found"));
+
+            if (t.getPurpose() != TokensPurpose.REFRESH)  throw new IllegalStateException("wrong_purpose");
+            if (t.isRevoked())                            throw new IllegalStateException("revoked");
+            if (!t.getExpiresInstant().isAfter(Instant.now()))
+                                                        throw new IllegalStateException("expired");
+            return t;
+
+        } catch (IllegalStateException e) {
+            log.debug("refresh_token_validation_failed",
+                Map.of("reason", e.getMessage(), "tokenId", tokenValue));
+            throw new AppException(ApiError.REFRESH_TOKEN_INVALID);
+        }
     }
 
+
     @Override
-    public Token validateSingleUseToken(String token) {
-        return tokenDAO.findById(token)
-                .filter(t -> t.getPurpose() != TokensPurpose.REFRESH)
-                .filter(t -> t.getExpiresInstant().isAfter(Instant.now()))
-                .filter(t -> t.getUsedInstant() == null)
-                .orElseThrow(() -> new AppException(ApiError.SINGLE_USE_TOKEN_INVALID));
+    public Token validateSingleUseToken(String tokenValue, TokensPurpose expectedPurpose) {
+        try {
+            Token t = tokenDAO.findById(tokenValue)
+                    .orElseThrow(() -> new IllegalStateException("not_found"));
+
+            if (t.getPurpose() != expectedPurpose)                  throw new IllegalStateException("wrong_purpose");
+            if (t.isRevoked())                                      throw new IllegalStateException("revoked");
+            if (!t.getExpiresInstant().isAfter(Instant.now()))      throw new IllegalStateException("expired");
+            if (t.getUsedInstant() != null)                         throw new IllegalStateException("used");
+
+            return t;
+
+        } catch (IllegalStateException e) {
+            log.debug("single_use_token_validation_failed",
+                    Map.of("reason", e.getMessage(),
+                           "expectedPurpose", String.valueOf(expectedPurpose),
+                           "tokenId", tokenValue));
+            throw new AppException(ApiError.SINGLE_USE_TOKEN_INVALID); // collapse externally
+        }
     }
 
     @Override

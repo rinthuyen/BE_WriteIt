@@ -1,5 +1,6 @@
 package com.writeit.write_it.entity;
 
+import com.writeit.write_it.common.auditing.Auditable;
 import com.writeit.write_it.entity.enums.Role;
 import com.writeit.write_it.entity.enums.Status;
 
@@ -24,7 +25,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = "password")
-public class User {
+public class User extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,18 +1,22 @@
 package com.writeit.write_it.config;
-
+import java.util.Optional;
 import java.util.Properties;
 
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 
 @Configuration
 @EnableScheduling
+@EnableJpaAuditing
 public class AppConfig {
     @Bean
     Jackson2ObjectMapperBuilderCustomizer enumAsNullOnUnknown(){
@@ -36,5 +40,13 @@ public class AppConfig {
         props.put("mail.debug", "true");
 
         return mailSender;
+    }
+
+    @Bean
+    public AuditorAware<String> auditorAware(){
+        return () -> Optional.ofNullable(SecurityContextHolder.getContext()
+                        .getAuthentication())
+                        .filter(auth -> auth.isAuthenticated())
+                        .map(auth -> auth.getName());       
     }
 }

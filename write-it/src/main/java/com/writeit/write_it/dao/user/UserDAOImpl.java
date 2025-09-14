@@ -42,5 +42,5 @@ public class UserDAOImpl extends CrudDAOImpl<Long, User> implements UserDAO {
                 .setParameter("email", email)
                 .getResultList();
         return user.stream().findFirst();
-    }
+    } 
 }

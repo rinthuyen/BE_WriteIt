@@ -10,5 +10,9 @@ import lombok.NoArgsConstructor;
 public class UserUpdatePasswordRequestDTO {
     @NotBlank(message = "{password.notBlank}")
     @Size(min = 5, message = "{password.size}")
-    private String password;
+    private String oldPassword;
+
+    @NotBlank(message = "{password.notBlank}")
+    @Size(min = 5, message = "{password.size}")
+    private String newPassword;
 }
