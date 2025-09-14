@@ -4,14 +4,14 @@ import java.time.Instant;
 
 import org.springframework.stereotype.Repository;
 
-import com.writeit.write_it.dao.crud.CrudDAOImpl;
+import com.writeit.write_it.dao.crud.SoftCrudDAOImpl;
 import com.writeit.write_it.entity.Token;
 import com.writeit.write_it.entity.enums.TokensPurpose;
 
 import jakarta.persistence.EntityManager;
 
 @Repository
-public class TokenDAOImpl extends CrudDAOImpl<String, Token> implements TokenDAO {
+public class TokenDAOImpl extends SoftCrudDAOImpl<String, Token> implements TokenDAO {
 
     public TokenDAOImpl(EntityManager entityManager) {
         super(entityManager, Token.class);
@@ -21,9 +21,9 @@ public class TokenDAOImpl extends CrudDAOImpl<String, Token> implements TokenDAO
     // @Transactional
     public void revokeRefreshToken(String token) {
         Token refreshToken = entityManager.find(Token.class, token);
-        if (refreshToken != null 
-            && refreshToken.getPurpose() == TokensPurpose.REFRESH
-            && !refreshToken.isRevoked()) {
+        if (refreshToken != null
+                && refreshToken.getPurpose() == TokensPurpose.REFRESH
+                && !refreshToken.isRevoked()) {
             refreshToken.setRevoked(true);
         }
     }

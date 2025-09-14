@@ -2,6 +2,8 @@ package com.writeit.write_it.dao.crud;
 
 import java.util.Optional;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import jakarta.persistence.EntityManager;
 
 public class CrudDAOImpl<K, V> implements CrudDAO<K, V> {
@@ -30,5 +32,14 @@ public class CrudDAOImpl<K, V> implements CrudDAO<K, V> {
     // @Transactional
     public void update(V object) {
         entityManager.merge(object);
+    }
+
+    @Override
+    @Transactional
+    public int deleteById(K id) {
+        V object = entityManager.find(entityClass, id);
+        if (object == null) return 0;
+        entityManager.remove(object);
+        return 1;
     }
 }

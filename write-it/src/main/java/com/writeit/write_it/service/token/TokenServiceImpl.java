@@ -66,13 +66,6 @@ public class TokenServiceImpl implements TokenService {
 
 
     @Override
-    // public Token validateRefreshToken(String token) {
-    //     return tokenDAO.findById(token)
-    //             .filter(t -> t.getPurpose() == TokensPurpose.REFRESH)
-    //             .filter(t -> !t.isRevoked())
-    //             .filter(t -> t.getExpiresInstant().isAfter(Instant.now()))
-    //             .orElseThrow(() -> new AppException(ApiError.REFRESH_TOKEN_INVALID));
-    // }
     public Token validateRefreshToken(String tokenValue) {
         try {
             Token t = tokenDAO.findById(tokenValue)

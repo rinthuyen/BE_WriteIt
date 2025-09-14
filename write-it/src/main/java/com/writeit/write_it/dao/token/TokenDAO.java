@@ -1,10 +1,10 @@
 package com.writeit.write_it.dao.token;
 
-import com.writeit.write_it.dao.crud.CrudDAO;
+import com.writeit.write_it.dao.crud.SoftCrudDAO;
 import com.writeit.write_it.entity.Token;
 import com.writeit.write_it.entity.enums.TokensPurpose;
 
-public interface TokenDAO extends CrudDAO<String, Token> {
+public interface TokenDAO extends SoftCrudDAO<String, Token> {
     // soft delete a token when logging out
     void revokeRefreshToken(String token);
 

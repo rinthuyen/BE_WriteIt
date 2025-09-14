@@ -8,4 +8,6 @@ public interface CrudDAO<K, V> {
     Optional<V> findById(K id);
 
     void update(V object);
+
+    int deleteById(K id);
 }
