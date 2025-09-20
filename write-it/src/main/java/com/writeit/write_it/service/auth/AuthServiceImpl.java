@@ -136,7 +136,7 @@ public class AuthServiceImpl implements AuthService {
 
     private void sendPasswordResetEmail(String recipient, String token) {
         String subject = "WriteIt Password Reset Request";
-        String url = "http://writeit/reset-password?token=" + token;
+        String url = "http://localhost:4200/auth/reset-password?token=" + token; //should move the  url to the configuration
         String body = "Click the link to reset your password: " + url;
         emailService.sendEmail(recipient, subject, body);
     }
