@@ -36,11 +36,21 @@ public class UserDAOImpl extends CrudDAOImpl<Long, User> implements UserDAO {
     }
 
     @Override
-    public Optional<User> findByEmail(String email){
+    public Optional<User> findByEmail(String email) {
         String query = "SELECT u FROM User u WHERE u.email = :email";
         List<User> user = entityManager.createQuery(query, User.class)
                 .setParameter("email", email)
                 .getResultList();
         return user.stream().findFirst();
-    } 
+    }
+
+    @Override
+    public boolean isEmailTakenByAnotherUser(String email, Long excludeId) {
+        String query = "SELECT COUNT(u.id) FROM User u WHERE u.email = :email AND u.id <> :excludeId";
+        Long count = entityManager.createQuery(query, Long.class)
+                .setParameter("email", email)
+                .setParameter("excludeId", excludeId)
+                .getSingleResult();
+        return count > 0;
+    }
 }

@@ -7,4 +7,6 @@ public interface SoftCrudDAO<K, V extends AuditableAndSoftDeletable> extends Cru
     int deleteById(K id);
 
     int restoreById(K id);
+
+    // Optional<V> findByIdIncludingDeleted(K id);
 }

@@ -1,4 +1,4 @@
-package com.writeit.write_it.dto.request;
+package com.writeit.write_it.dto.request.auth_user;
 
 import com.writeit.write_it.common.annotations.EnumValue;
 import com.writeit.write_it.entity.enums.Status;
@@ -12,14 +12,14 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class UserUpdateRequestDTO {
-    @NotBlank(message = "{displayed_name.notBlank}")
+    @NotBlank(message = "{displayedName.notBlank}")
     private String displayedName;
 
     @NotBlank(message = "{email.notBlank}")
-    @Email(message="{email.invalid}")
+    @Email(message = "{email.invalid}")
     private String email;
-    
-    @EnumValue(message="{enum_value.invalid}")
+
+    @EnumValue(message = "{enumValue.invalid}")
     @NotNull(message = "{status.notNull}")
     private Status status;
 }

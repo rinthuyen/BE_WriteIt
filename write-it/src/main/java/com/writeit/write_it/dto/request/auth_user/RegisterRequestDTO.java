@@ -1,4 +1,4 @@
-package com.writeit.write_it.dto.request;
+package com.writeit.write_it.dto.request.auth_user;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -14,6 +14,6 @@ public class RegisterRequestDTO {
     @Size(min = 5, message = "{password.size}")
     private String password;
 
-    @NotBlank(message = "{displayed_name.notBlank}")
+    @NotBlank(message = "{displayedName.notBlank}")
     private String displayedName;
 }

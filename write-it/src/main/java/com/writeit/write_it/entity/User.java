@@ -1,8 +1,8 @@
 package com.writeit.write_it.entity;
 
 import com.writeit.write_it.common.auditing.Auditable;
-import com.writeit.write_it.entity.enums.Role;
 import com.writeit.write_it.entity.enums.Status;
+import com.writeit.write_it.entity.enums.UserRole;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,7 +19,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -38,7 +38,7 @@ public class User extends Auditable {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "displayedName", nullable = false)
+    @Column(name = "displayed_name", nullable = false)
     private String displayedName;
 
     @Column(name = "email")
@@ -48,9 +48,9 @@ public class User extends Auditable {
     @Enumerated(EnumType.STRING)
     private Status status = Status.ACTIVE;
 
-    @Column(name = "role", nullable = false)
+    @Column(name = "role", nullable = false, length = 16)
     @Enumerated(EnumType.STRING)
-    private Role role = Role.USER;
+    private UserRole role = UserRole.USER;
 
     public User(String username, String password, String displayedName) {
         this.username = username;

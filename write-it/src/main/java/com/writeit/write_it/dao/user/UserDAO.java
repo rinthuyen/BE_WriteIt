@@ -13,10 +13,5 @@ public interface UserDAO extends CrudDAO<Long, User> {
 
     Optional<User> findByEmail(String email);
 
-    // void deleteUser(Long id);
-    // self note: turn it to soft delete later on, so change the database schema as
-    // well?
-
-    // consider add a deleteAllUsers() method
-    // for testing purposes, but not for production use
+    boolean isEmailTakenByAnotherUser(String email, Long excludeId);
 }

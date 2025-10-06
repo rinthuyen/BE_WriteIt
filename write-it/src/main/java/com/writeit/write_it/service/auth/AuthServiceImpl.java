@@ -19,10 +19,10 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import com.writeit.write_it.common.exception.ApiError;
 import com.writeit.write_it.common.exception.AppException;
 import com.writeit.write_it.dao.user.UserDAO;
-import com.writeit.write_it.dto.request.ForgotPasswordRequestDTO;
-import com.writeit.write_it.dto.request.LoginRequestDTO;
-import com.writeit.write_it.dto.request.RegisterRequestDTO;
-import com.writeit.write_it.dto.request.ResetPasswordRequestDTO;
+import com.writeit.write_it.dto.request.auth_user.ForgotPasswordRequestDTO;
+import com.writeit.write_it.dto.request.auth_user.LoginRequestDTO;
+import com.writeit.write_it.dto.request.auth_user.RegisterRequestDTO;
+import com.writeit.write_it.dto.request.auth_user.ResetPasswordRequestDTO;
 import com.writeit.write_it.dto.response.AuthTokenResponseDTO;
 import com.writeit.write_it.dto.response.RegisterResponseDTO;
 import com.writeit.write_it.entity.Token;
@@ -68,15 +68,17 @@ public class AuthServiceImpl implements AuthService {
         Authentication auth;
         try {
             auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                    request.getUsername(), request.getPassword()
-                )
-            );
+                    new UsernamePasswordAuthenticationToken(
+                            request.getUsername(), request.getPassword()));
         } catch (AuthenticationException ex) {
-            if (ex instanceof DisabledException)           throw new AppException(ApiError.USER_DEACTIVATED);
-            if (ex instanceof LockedException)             throw new AppException(ApiError.ACCOUNT_LOCKED);
-            if (ex instanceof AccountExpiredException)     throw new AppException(ApiError.ACCOUNT_EXPIRED);
-            if (ex instanceof CredentialsExpiredException) throw new AppException(ApiError.CREDENTIALS_EXPIRED);
+            if (ex instanceof DisabledException)
+                throw new AppException(ApiError.USER_DEACTIVATED);
+            if (ex instanceof LockedException)
+                throw new AppException(ApiError.ACCOUNT_LOCKED);
+            if (ex instanceof AccountExpiredException)
+                throw new AppException(ApiError.ACCOUNT_EXPIRED);
+            if (ex instanceof CredentialsExpiredException)
+                throw new AppException(ApiError.CREDENTIALS_EXPIRED);
             throw new AppException(ApiError.CREDENTIALS_INVALID);
         }
 
@@ -88,7 +90,6 @@ public class AuthServiceImpl implements AuthService {
 
         return new AuthTokenResponseDTO(accessToken, refreshToken.getToken());
     }
-
 
     @Override
     @Transactional
@@ -108,13 +109,12 @@ public class AuthServiceImpl implements AuthService {
         return new AuthTokenResponseDTO(access, newRt.getToken());
     }
 
-
     @Override
     @Transactional
     public void forgotPassword(ForgotPasswordRequestDTO request) {
         Optional<User> userOpt = userDAO.findByEmail(request.getEmail());
         if (userOpt.isEmpty()) {
-            // return 200 regardless 
+            // return 200 regardless
             return;
         }
         User user = userOpt.get();
@@ -124,7 +124,8 @@ public class AuthServiceImpl implements AuthService {
         String token = passwordResetToken.getToken();
 
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override public void afterCommit() {
+            @Override
+            public void afterCommit() {
                 try {
                     sendPasswordResetEmail(user.getEmail(), token);
                 } catch (RuntimeException e) {
