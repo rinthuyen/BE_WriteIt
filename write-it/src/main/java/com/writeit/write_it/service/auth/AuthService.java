@@ -1,9 +1,9 @@
 package com.writeit.write_it.service.auth;
 
-import com.writeit.write_it.dto.request.ForgotPasswordRequestDTO;
-import com.writeit.write_it.dto.request.LoginRequestDTO;
-import com.writeit.write_it.dto.request.RegisterRequestDTO;
-import com.writeit.write_it.dto.request.ResetPasswordRequestDTO;
+import com.writeit.write_it.dto.request.auth_user.ForgotPasswordRequestDTO;
+import com.writeit.write_it.dto.request.auth_user.LoginRequestDTO;
+import com.writeit.write_it.dto.request.auth_user.RegisterRequestDTO;
+import com.writeit.write_it.dto.request.auth_user.ResetPasswordRequestDTO;
 import com.writeit.write_it.dto.response.AuthTokenResponseDTO;
 import com.writeit.write_it.dto.response.RegisterResponseDTO;
 

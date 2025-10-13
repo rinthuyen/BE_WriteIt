@@ -1,18 +1,15 @@
-package com.writeit.write_it.dto.request;
+package com.writeit.write_it.dto.request.auth_user;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class LoginRequestDTO {
-    @NotBlank(message = "{username.notBlank}")
-    @Size(min = 3, max = 20, message = "{username.size}")
-    private String username;
-    
+public class ResetPasswordRequestDTO {
+    @NotBlank(message = "{token.notBlank}")
+    private String token;
+
     @NotBlank(message = "{password.notBlank}")
     @Size(min = 5, message = "{password.size}")
     private String password;
-
-    private String deviceInfo;
 }

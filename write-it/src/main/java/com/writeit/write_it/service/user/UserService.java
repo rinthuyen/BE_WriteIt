@@ -1,9 +1,10 @@
 package com.writeit.write_it.service.user;
 
-import com.writeit.write_it.dto.request.UserUpdatePasswordRequestDTO;
-import com.writeit.write_it.dto.request.UserUpdateRequestDTO;
+import com.writeit.write_it.dto.request.auth_user.UserUpdatePasswordRequestDTO;
+import com.writeit.write_it.dto.request.auth_user.UserUpdateRequestDTO;
 
 public interface UserService {
-    void update(UserUpdateRequestDTO request, String username);
-    void updatePassword(UserUpdatePasswordRequestDTO request, String username);
+    void update(UserUpdateRequestDTO request, Long userId);
+
+    void updatePassword(UserUpdatePasswordRequestDTO request, Long userId);
 }

@@ -32,19 +32,18 @@ public class GlobalExceptionHandler {
     }
 
     private static final Map<String, Integer> PRIORITY = Map.of(
-        "NotBlank", 0, "NotNull", 0, "NotEmpty", 0,
-        "Pattern", 1, "Email", 1, "EnumValue", 1,
-        "Size", 2, "Min", 2, "Max", 2
-    );
+            "NotBlank", 0, "NotNull", 0, "NotEmpty", 0,
+            "Pattern", 1, "Email", 1, "EnumValue", 1,
+            "Size", 2, "Min", 2, "Max", 2);
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Response<Object>> handleValidation(MethodArgumentNotValidException ex) {
 
         List<FieldError> sorted = ex.getBindingResult()
-            .getFieldErrors()
-            .stream()
-            .sorted(Comparator.comparingInt(fe -> PRIORITY.getOrDefault(fe.getCode(), 100)))
-            .collect(Collectors.toList());
+                .getFieldErrors()
+                .stream()
+                .sorted(Comparator.comparingInt(fe -> PRIORITY.getOrDefault(fe.getCode(), 100)))
+                .collect(Collectors.toList());
 
         Map<String, String> firstPerField = new LinkedHashMap<>();
         for (FieldError fe : sorted) {
@@ -54,11 +53,11 @@ public class GlobalExceptionHandler {
         // if i were to have class level errors
         // var globalErrors = ex.getBindingResult().getGlobalErrors();
         // if (!globalErrors.isEmpty()) {
-        //     String joined = globalErrors.stream()
-        //             .map(err -> err.getDefaultMessage())
-        //             .distinct()
-        //             .collect(Collectors.joining("; "));
-        //     firstPerField.put("_global", joined);
+        // String joined = globalErrors.stream()
+        // .map(err -> err.getDefaultMessage())
+        // .distinct()
+        // .collect(Collectors.joining("; "));
+        // firstPerField.put("_global", joined);
         // }
 
         Response<Object> body = Response.error(ApiError.VALIDATION_FAILED)

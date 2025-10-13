@@ -1,4 +1,4 @@
-package com.writeit.write_it.dto.request;
+package com.writeit.write_it.dto.request.auth_user;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
